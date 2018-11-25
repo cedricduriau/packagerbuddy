@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+# stdlib modules
+from __future__ import absolute_import
+import argparse
+
+# tool modules
+
+
+def _build_parser():
+    """
+    Builds the command line interface.
+
+    :rtype: argparse.ArgumentParser
+    """
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    # ========================================================================
+    # install
+    # ========================================================================
+    parser_install = subparsers.add_parser("install")
+    parser_install.set_defaults(which="install")
+
+    # required arguments
+    req_args = parser_install.add_argument_group("required arguments")
+    req_args.add_argument("-s", "--software", help="name of the software to install")
+    req_args.add_argument("-v", "--version", help="version of the software to install")
+
+    return parser
+
+
+if __name__ == "__main__":
+    parser = _build_parser()
+    namespace = parser.parse_args()
+    action = namespace.which
