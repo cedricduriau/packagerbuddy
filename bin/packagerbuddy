@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import argparse
 
 # tool modules
+from packagerbuddy import packagerbuddy
 
 
 def _build_parser():
@@ -24,8 +25,12 @@ def _build_parser():
 
     # required arguments
     req_args = parser_install.add_argument_group("required arguments")
-    req_args.add_argument("-s", "--software", help="name of the software to install")
-    req_args.add_argument("-v", "--version", help="version of the software to install")
+
+    help = "name of the software to install"
+    req_args.add_argument("-s", "--software", required=True, help=help)
+
+    help = "version of the software to install"
+    req_args.add_argument("-v", "--version", required=True, help=help)
 
     return parser
 
@@ -34,3 +39,6 @@ if __name__ == "__main__":
     parser = _build_parser()
     namespace = parser.parse_args()
     action = namespace.which
+
+    if action == "install":
+        packagerbuddy.install(namespace.software, namespace.version)
