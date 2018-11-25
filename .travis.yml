@@ -6,7 +6,7 @@ install:
 jobs:
   include:
     - stage: setenv
-      script: source ./setenv
+      script: source ./settestenv
     - stage: check
       script: ./runcheck
     - stage: test
