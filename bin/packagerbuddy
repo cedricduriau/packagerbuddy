@@ -32,6 +32,12 @@ def _build_parser():
     help = "version of the software to install"
     req_args.add_argument("-v", "--version", required=True, help=help)
 
+    # ========================================================================
+    # list
+    # ========================================================================
+    parser_list = subparsers.add_parser("list")
+    parser_list.set_defaults(which="list")
+
     return parser
 
 
@@ -42,3 +48,9 @@ if __name__ == "__main__":
 
     if action == "install":
         packagerbuddy.install(namespace.software, namespace.version)
+    elif action == "list":
+        msg = "No installed software found."
+        installed = packagerbuddy.get_installed_software()
+        if installed:
+            msg = "\n".join(["- " + i for i in installed])
+        print(msg)
