@@ -9,3 +9,5 @@ jobs:
       script: ./runcheck
     - stage: test
       script: source ./settestenv && ./runtests
+after_success:
+  - codecov
