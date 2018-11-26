@@ -120,3 +120,15 @@ def test_is_software_installed(patch_PB_INSTALL):
 def test_get_installed_software(patch_PB_INSTALL):
     """Test getting the installed software releases."""
     assert packagerbuddy.get_installed_software() == [os.path.join(os.environ["PB_INSTALL"], "valid-1.0.0")]
+
+
+def test_get_configs(patch_PB_CONFIGS):
+    """Test getting the available software configs."""
+    assert packagerbuddy.get_configs() == [os.path.join(os.environ["PB_CONFIGS"], "config_valid.json")]
+
+
+def test_get_software_from_config():
+    """Test getting the name of a software from a software config."""
+    assert packagerbuddy.get_software_from_config("config_foo.json") == "foo"
+    assert packagerbuddy.get_software_from_config("~/config_foo-bar.json") == "foo-bar"
+    assert packagerbuddy.get_software_from_config("../config_fu.manchu.json") == "fu.manchu"
