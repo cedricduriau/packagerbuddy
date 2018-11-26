@@ -38,6 +38,12 @@ def _build_parser():
     parser_list = subparsers.add_parser("list")
     parser_list.set_defaults(which="list")
 
+    # ========================================================================
+    # avail
+    # ========================================================================
+    parser_avail = subparsers.add_parser("avail")
+    parser_avail.set_defaults(which="avail")
+
     return parser
 
 
@@ -53,4 +59,11 @@ if __name__ == "__main__":
         installed = packagerbuddy.get_installed_software()
         if installed:
             msg = "\n".join(["- " + i for i in installed])
+        print(msg)
+    elif action == "avail":
+        msg = "No software configs available."
+        configs = packagerbuddy.get_configs()
+        if configs:
+            names = map(packagerbuddy.get_software_from_config, configs)
+            msg = "\n".join(["- " + i for i in names])
         print(msg)
