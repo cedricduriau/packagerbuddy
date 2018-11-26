@@ -1,6 +1,7 @@
 # stdlib modules
 import os
 import json
+import glob
 import shutil
 import urllib2
 import tarfile
@@ -248,6 +249,9 @@ def install(software, version):
         print("installing ...")
         shutil.move(target_path, install_path)
 
+    # create .pbsoftware file
+    open(os.path.join(install_path, ".pbsoftware"), "w+").close()
+
 
 def is_software_installed(software, version):
     """
@@ -263,5 +267,16 @@ def is_software_installed(software, version):
     """
     target_name = "-".join([software, version])
     install_dir = get_install_location()
-    install_path = os.path.join(install_dir, target_name)
-    return os.path.exists(install_path)
+    pb_package_file = os.path.join(install_dir, target_name, ".pbsoftware")
+    return os.path.exists(pb_package_file)
+
+
+def get_installed_software():
+    """
+    Gets the paths of the installed software releases.
+
+    :rtype: list[str]
+    """
+    install_dir = get_install_location()
+    pb_package_files = glob.glob(os.path.join(install_dir, "*", ".pbsoftware"))
+    return map(os.path.dirname, pb_package_files)
