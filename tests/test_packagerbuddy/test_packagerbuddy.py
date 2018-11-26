@@ -113,5 +113,6 @@ def test_install():
 
 def test_is_software_installed(patch_PB_INSTALL):
     """Test checking whether a software is installed or not."""
+    print(os.environ["PB_INSTALL"])
     assert packagerbuddy.is_software_installed("valid", "1.0.0") is True
     assert packagerbuddy.is_software_installed("valid", "0.0.0") is False
