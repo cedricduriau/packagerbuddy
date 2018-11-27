@@ -2,6 +2,7 @@
 
 # stdlib modules
 from __future__ import absolute_import
+import os
 import argparse
 
 # tool modules
@@ -20,7 +21,8 @@ def _build_parser():
     # ========================================================================
     # install
     # ========================================================================
-    parser_install = subparsers.add_parser("install")
+    help = "installs a software version"
+    parser_install = subparsers.add_parser("install", help=help)
     parser_install.set_defaults(which="install")
 
     # required arguments
@@ -35,14 +37,52 @@ def _build_parser():
     # ========================================================================
     # list
     # ========================================================================
-    parser_list = subparsers.add_parser("list")
+    help = "shows all installed software versions"
+    parser_list = subparsers.add_parser("list", help=help)
     parser_list.set_defaults(which="list")
 
     # ========================================================================
     # avail
     # ========================================================================
-    parser_avail = subparsers.add_parser("avail")
+    help = "shows all available software packages to install"
+    parser_avail = subparsers.add_parser("avail", help=help)
     parser_avail.set_defaults(which="avail")
+
+    # ========================================================================
+    # uninstall
+    # ========================================================================
+    help = "uninstall one or all versions of a software"
+    parser_uninstall = subparsers.add_parser("uninstall", help=help)
+    parser_uninstall.set_defaults(which="uninstall")
+
+    # required arguments
+    req_args = parser_uninstall.add_argument_group("required arguments")
+
+    help = "name of the software to uninstall"
+    req_args.add_argument("-s", "--software", required=True, help=help)
+
+    # optional arguments
+    help = "version of the version to uninstall"
+    parser_uninstall.add_argument("-v", "--version", required=False, help=help)
+
+    help = "perform a trial run with no changes made"
+    parser_uninstall.add_argument("--dry-run", action="store_true", help=help)
+
+    # ========================================================================
+    # parser settings
+    # ========================================================================
+    # usage
+    usages = []
+    usages.append(parser_install.format_usage())
+    usages.append(parser_list.format_usage())
+    usages.append(parser_avail.format_usage())
+    usages.append(parser_uninstall.format_usage())
+
+    usage = os.path.basename(__file__) + " [COMMAND] [OPTIONS]\n"
+    parser.usage = usage + "".join(usages)
+
+    # description
+    parser.description = """Config based software packager."""
 
     return parser
 
@@ -67,3 +107,7 @@ if __name__ == "__main__":
             names = map(packagerbuddy.get_software_from_config, configs)
             msg = "\n".join(["- " + i for i in names])
         print(msg)
+    elif action == "uninstall":
+        packagerbuddy.uninstall(namespace.software,
+                                version=namespace.version,
+                                dry_run=namespace.dry_run)
