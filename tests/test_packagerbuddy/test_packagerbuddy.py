@@ -85,7 +85,7 @@ def test_get_install_location(patch_PB_INSTALL):
 
 def test_build_config_name():
     """Test buidling a software config name."""
-    assert packagerbuddy.build_config_name("test") == "config_test.json"
+    assert packagerbuddy._build_config_name("test") == "config_test.json"
 
 
 def test_get_config_path(patch_PB_CONFIGS):
@@ -93,7 +93,7 @@ def test_get_config_path(patch_PB_CONFIGS):
     name = "config_valid.json"
     current_dir = os.path.dirname(__file__)
     expected = os.path.abspath(os.path.join(current_dir, "..", "test_configs", name))
-    assert packagerbuddy.get_config_path(name) == expected
+    assert packagerbuddy._get_config_path(name) == expected
 
 
 def test_get_config(patch_PB_CONFIGS):
@@ -132,3 +132,73 @@ def test_get_software_from_config():
     assert packagerbuddy.get_software_from_config("config_foo.json") == "foo"
     assert packagerbuddy.get_software_from_config("~/config_foo-bar.json") == "foo-bar"
     assert packagerbuddy.get_software_from_config("../config_fu.manchu.json") == "fu.manchu"
+
+
+def test_get_suported_extensions():
+    """Test getting the supported software archive extensions."""
+    assert packagerbuddy.get_suported_extensions() == set(["tar", "tar.gz", "tar.bz"])
+
+
+def test_validate_config_name():
+    """Test validating valid software config names."""
+    # path
+    packagerbuddy.validate_config_name("~/config_foo.json") == "foo"
+
+    # filename
+    packagerbuddy.validate_config_name("config_bar.json") == "bar"
+
+
+def test_validate_config_name_fail():
+    """Test validating invalid software config names."""
+    # path does not start with config_
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config_name("~/foo.json")
+
+    # path does not end with .json
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config_name("~/config_foo.yml")
+
+    # filename does not start with config_
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config_name("foo.json")
+
+    # filename does not end with .json
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config_name("config_foo.yml")
+
+
+def test_validate_config(patch_urllib2):
+    """Test validating a valid software config."""
+    config = {"url": "http://valid.com", "extension": "tar"}
+    packagerbuddy.validate_config(config)
+
+
+def test_validate_config_fail(patch_urllib2):
+    """Test validating invalid software configs."""
+    # missing key url
+    with pytest.raises(KeyError):
+        packagerbuddy.validate_config({"extension": None})
+
+    # missing key extension
+    with pytest.raises(KeyError):
+        packagerbuddy.validate_config({"url": None})
+
+    # no url value
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config({"url": None, "extension": None})
+
+    # invalid url
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config({"url": "http://invalid.com", "extension": None})
+
+    # no extension
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config({"url": "http://valid.com", "extension": None})
+
+    # invalid extension, leading dot
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config({"url": "http://valid.com", "extension": ".tar"})
+
+    # invalid extension, unsupported
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config({"url": "http://valid.com", "extension": "foo"})
