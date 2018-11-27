@@ -136,6 +136,19 @@ def _get_config_path(name):
     return os.path.join(get_configs_location(), name)
 
 
+def _build_download_url(template, version):
+    """
+    Builds the software release download url.
+
+    :param template: url template
+    :type template: str
+
+    :param version: software release
+    :type version: str
+    """
+    return template.format(version=version)
+
+
 # ============================================================================
 # public
 # ============================================================================
@@ -205,7 +218,7 @@ def install(software, version):
     config = get_config(software)
 
     # validate config
-    validate_config(config)
+    validate_config(config, version)
 
     template = config["url"]
     extension = config["extension"]
@@ -326,7 +339,7 @@ def validate_config_name(name):
         raise ValueError("invalid name {!r}, does not end with '.json'".format(name))
 
 
-def validate_config(config):
+def validate_config(config, version):
     """
     Validates a software config.
 
@@ -336,6 +349,7 @@ def validate_config(config):
     :raises KeyError: if url key is missing
     :raises KeyError: if extension key is missing
     :raises ValueError: if url is empty
+    :raises ValueError: if url has no version placeholder
     :raises ValueError: if url is invalid
     :raises ValueError: if extension is empty
     :raises ValueError: if extension starts with a dot
@@ -352,7 +366,12 @@ def validate_config(config):
     if not url:
         raise ValueError("url is empty")
 
+    format_key = r"{version}"
+    if format_key not in url:
+        raise ValueError("invalid url {!r}, needs to contain a {!r} placeholder".format(url, format_key))
+
     try:
+        url = _build_download_url(url, version)
         urllib2.urlopen(url)
     except Exception as e:
         raise ValueError("invalid url {} ({})".format(url, str(e)))
