@@ -12,4 +12,4 @@ Use Cases
 --------
 - I set up (virtual) machines often and want to have a quick way of setting up software.
 - I run multiple versions of the same software package.
-- I don't like how software auto-updates and install a newer version of itself.
+- I don't like how software auto-updates and installs a newer version of itself.
