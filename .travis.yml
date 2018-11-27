@@ -8,6 +8,6 @@ jobs:
     - stage: check
       script: ./runcheck
     - stage: test
-      script: source ./settestenv && ./runtests
+      script: source ./setenv && ./runtests
 after_success:
   - codecov
