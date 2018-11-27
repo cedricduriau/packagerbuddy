@@ -46,7 +46,7 @@ packagerbuddy list
 ```
 
 ### List software available to install
-The `avail` command prints all software names that PackagerBuddy holds a config for. If the configs are set up correctly, all of the listed software names are suitable to install.
+The `avail` command prints all software names that PackagerBuddy holds a config for.
 ```
 packagerbuddy avail
 ```
