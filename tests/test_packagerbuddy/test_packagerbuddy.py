@@ -113,13 +113,16 @@ def test_install():
 
 def test_is_software_installed(patch_PB_INSTALL):
     """Test checking whether a software is installed or not."""
+    assert packagerbuddy.is_software_installed("valid", "2.0.0") is True
     assert packagerbuddy.is_software_installed("valid", "1.0.0") is True
     assert packagerbuddy.is_software_installed("valid", "0.0.0") is False
 
 
 def test_get_installed_software(patch_PB_INSTALL):
     """Test getting the installed software releases."""
-    assert packagerbuddy.get_installed_software() == [os.path.join(os.environ["PB_INSTALL"], "valid-1.0.0")]
+    install_dir = os.environ["PB_INSTALL"]
+    assert packagerbuddy.get_installed_software() == [os.path.join(install_dir, "valid-1.0.0"),
+                                                      os.path.join(install_dir, "valid-2.0.0")]
 
 
 def test_get_configs(patch_PB_CONFIGS):
@@ -212,3 +215,7 @@ def test_validate_config_fail(patch_urllib2):
 def test_build_download_url():
     """Test building a download url."""
     packagerbuddy._build_download_url("http://valid.com/{version}", "1.0.0") == "http://valid.com/1.0.0"
+
+
+def test_uninstall():
+    pass
