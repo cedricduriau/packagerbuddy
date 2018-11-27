@@ -36,7 +36,7 @@ Installing consists of four steps:
 
 1. Download the software from the url in the configs to the designated download directory.
 2. Unpack the downloaded content based on the extension in the config.
-3. Installs/moves the unpacked content to the designated install directory.
+3. Install/move the unpacked content to the designated install directory.
 4. Create a package file inside the installed directory.
 
 ### List installed software
