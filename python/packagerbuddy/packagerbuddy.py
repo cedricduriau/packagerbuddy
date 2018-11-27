@@ -48,17 +48,8 @@ def _download(url, to):
 
     :param to: full path to download to
     :type to: str
-
-    :raises urllib2.HTTPError: if URL does not exist
     """
-    try:
-        f = urllib2.urlopen(url)
-    except urllib2.HTTPError as e:
-        if e.code == 404:
-            # add custom message
-            e.msg = "given software version does not exist"
-        raise e
-
+    f = urllib2.urlopen(url)
     with open(to, "wb") as local_f:
         local_f.write(f.read())
 
@@ -121,6 +112,30 @@ def _unpack(archive, extension):
         return _untar(archive)
 
 
+def _build_config_name(software):
+    """
+    Builds the name of a software config.
+
+    :param software: software to build the config name for
+    :type software: str
+
+    :rtype: str
+    """
+    return "config_{software}.json".format(software=software)
+
+
+def _get_config_path(name):
+    """
+    Gets the full path of a software config.
+
+    :param name: name of the config to get full path for
+    :type name: str
+
+    :rtype: str
+    """
+    return os.path.join(get_configs_location(), name)
+
+
 # ============================================================================
 # public
 # ============================================================================
@@ -151,30 +166,6 @@ def get_install_location():
     return _read_environment_variable("PB_INSTALL")
 
 
-def build_config_name(software):
-    """
-    Builds the name of a software config.
-
-    :param software: software to build the config name for
-    :type software: str
-
-    :rtype: str
-    """
-    return "config_{software}.json".format(software=software)
-
-
-def get_config_path(name):
-    """
-    Gets the full path of a software config.
-
-    :param name: name of the config to get full path for
-    :type name: str
-
-    :rtype: str
-    """
-    return os.path.join(get_configs_location(), name)
-
-
 def get_config(software):
     """
     Returns the config for a software.
@@ -186,8 +177,8 @@ def get_config(software):
 
     :rtype: dict
     """
-    name = build_config_name(software)
-    path = get_config_path(name)
+    name = _build_config_name(software)
+    path = _get_config_path(name)
 
     if not os.path.exists(path):
         raise ValueError("no config found for software {!r}".format(software))
@@ -212,6 +203,10 @@ def install(software, version):
 
     # get config
     config = get_config(software)
+
+    # validate config
+    validate_config(config)
+
     template = config["url"]
     extension = config["extension"]
 
@@ -292,14 +287,84 @@ def get_configs():
     return glob.glob(os.path.join(configs_dir, "*.json"))
 
 
-def get_software_from_config(config):
+def get_software_from_config(name):
     """
-    Gets the name of the software from a software config.
+    Gets the name of the software from a software config path or filename.
 
-    :param config: software config to get name of software from
-    :type config: str
+    :param name: path of filename of a software config
+    :type name: str
 
     :rtype: str
     """
-    name = os.path.splitext(os.path.basename(config))[0]
+    validate_config_name(name)
+    name = os.path.splitext(os.path.basename(name))[0]
     return name.replace("config_", "")
+
+
+def get_suported_extensions():
+    """
+    Returns the supported software archive extensions.
+
+    :rtype: set[str]
+    """
+    return {"tar", "tar.gz", "tar.bz"}
+
+
+def validate_config_name(name):
+    """
+    Validates the name of a software config.
+
+    :raises ValueError: if the software config name does not start with _config
+    :raises ValueError: if the software config name does not end with .json
+    """
+    name = os.path.basename(name)
+
+    if not name.startswith("config_"):
+        raise ValueError("invalid name {!r}, does not start with 'config_'".format(name))
+
+    if not name.endswith(".json"):
+        raise ValueError("invalid name {!r}, does not end with '.json'".format(name))
+
+
+def validate_config(config):
+    """
+    Validates a software config.
+
+    :param config: software config to validate
+    :type config: dict
+
+    :raises KeyError: if url key is missing
+    :raises KeyError: if extension key is missing
+    :raises ValueError: if url is empty
+    :raises ValueError: if url is invalid
+    :raises ValueError: if extension is empty
+    :raises ValueError: if extension starts with a dot
+    :raises ValueError: if extension is not supported
+    """
+    # keys
+    req_keys = ["url", "extension"]
+    for k in req_keys:
+        if k not in config:
+            raise KeyError("missing key {!r}".format(k))
+
+    # url
+    url = config["url"]
+    if not url:
+        raise ValueError("url is empty")
+
+    try:
+        urllib2.urlopen(url)
+    except Exception as e:
+        raise ValueError("invalid url {} ({})".format(url, str(e)))
+
+    # extension
+    ext = config["extension"]
+    if not ext:
+        raise ValueError("extension is empty")
+
+    if ext.startswith("."):
+        raise ValueError("invalid extension {!r}, cannot include leading dot".format(ext))
+
+    valid_exts = get_suported_extensions()
+    if ext not in valid_exts:
+        raise ValueError("invalid extension {!r}, valid extensions are: {}".format(ext, ", ".join(valid_exts)))
