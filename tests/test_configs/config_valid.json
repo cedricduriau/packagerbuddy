@@ -1,4 +1,4 @@
 {
-    "url": "www.cedricduriau.be",
-    "extension": "cat"
+    "url": "http://valid.com/{version}",
+    "extension": "tar"
 }
