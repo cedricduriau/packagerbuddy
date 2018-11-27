@@ -1,5 +1,9 @@
 # stdlib
 import os
+import urllib2
+
+# tool modules
+from tests.mock_urllib2 import MockHTTPHandler
 
 # third party modules
 import pytest
@@ -23,3 +27,10 @@ def patch_PB_DOWNLOAD(monkeypatch):
 def patch_PB_INSTALL(monkeypatch):
     """Monkey patches the PB_INSTALL environment variable."""
     os.environ["PB_INSTALL"] = os.path.join(ROOT_TESTS, "test_install")
+
+
+@pytest.fixture
+def patch_urllib2(monkeypatch):
+    """Monkey patches the urllib2 module to return custom requests."""
+    my_opener = urllib2.build_opener(MockHTTPHandler)
+    urllib2.install_opener(my_opener)
