@@ -98,7 +98,7 @@ def test_get_config_path(patch_PB_CONFIGS):
 
 def test_get_config(patch_PB_CONFIGS):
     """Test getting the config for a valid software."""
-    assert packagerbuddy.get_config("valid") == {"url": "www.cedricduriau.be", "extension": "cat"}
+    assert packagerbuddy.get_config("valid") == {"url": "http://valid.com/{version}", "extension": "tar"}
 
 
 def test_get_config_fail(patch_PB_CONFIGS):
@@ -169,36 +169,46 @@ def test_validate_config_name_fail():
 
 def test_validate_config(patch_urllib2):
     """Test validating a valid software config."""
-    config = {"url": "http://valid.com", "extension": "tar"}
-    packagerbuddy.validate_config(config)
+    packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": "tar"}, "1.0.0")
 
 
 def test_validate_config_fail(patch_urllib2):
     """Test validating invalid software configs."""
+    version = "1.0.0"
+
     # missing key url
     with pytest.raises(KeyError):
-        packagerbuddy.validate_config({"extension": None})
+        packagerbuddy.validate_config({"extension": None}, version)
 
     # missing key extension
     with pytest.raises(KeyError):
-        packagerbuddy.validate_config({"url": None})
+        packagerbuddy.validate_config({"url": None}, version)
 
     # no url value
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": None, "extension": None})
+        packagerbuddy.validate_config({"url": None, "extension": None}, version)
+
+    # url without version placeholder format
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_config({"url": "http://invalid.com", "extension": None}, version)
 
     # invalid url
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://invalid.com", "extension": None})
+        packagerbuddy.validate_config({"url": "http://invalid.com/{version}", "extension": None}, version)
 
     # no extension
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://valid.com", "extension": None})
+        packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": None}, version)
 
     # invalid extension, leading dot
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://valid.com", "extension": ".tar"})
+        packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": ".tar"}, version)
 
     # invalid extension, unsupported
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://valid.com", "extension": "foo"})
+        packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": "foo"}, version)
+
+
+def test_build_download_url():
+    """Test building a download url."""
+    packagerbuddy._build_download_url("http://valid.com/{version}", "1.0.0") == "http://valid.com/1.0.0"
