@@ -387,3 +387,43 @@ def validate_config(config, version):
     valid_exts = get_suported_extensions()
     if ext not in valid_exts:
         raise ValueError("invalid extension {!r}, valid extensions are: {}".format(ext, ", ".join(valid_exts)))
+
+
+def uninstall(software, version=None, dry_run=False):
+    """
+    Uninstalls one or all versions of a software.
+
+    :param software: name of the softare to uninstall
+    :type software: str
+
+    :param version: release of the softare to uninstall, if not given, all
+                    releases will be uninstalled
+    :type version: str
+
+    :param dry_run: set True to skip the actual file system content
+    :type dry_run: bool
+    """
+    if dry_run:
+        print("!DRY-RUN MODE!")
+
+    # get installed software paths
+    installed = get_installed_software()
+
+    # group paths by name for easy lookup
+    paths_by_name = {os.path.basename(p): p for p in installed}
+
+    # group names by version for easy lookup
+    name_by_version = {n.split("-")[-1]: n for n in paths_by_name}
+
+    # get how many versions of software to uninstall
+    to_uninstall = name_by_version.keys()
+    if version and version in name_by_version:
+        to_uninstall = [version]
+
+    for v in to_uninstall:
+        name = name_by_version[v]
+        path = paths_by_name[name]
+
+        print("uninstalling {} ...".format(name))
+        if not dry_run:
+            shutil.rmtree(path)
