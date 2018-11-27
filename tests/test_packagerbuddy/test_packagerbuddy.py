@@ -121,8 +121,8 @@ def test_is_software_installed(patch_PB_INSTALL):
 def test_get_installed_software(patch_PB_INSTALL):
     """Test getting the installed software releases."""
     install_dir = os.environ["PB_INSTALL"]
-    assert packagerbuddy.get_installed_software() == [os.path.join(install_dir, "valid-2.0.0"),
-                                                      os.path.join(install_dir, "valid-1.0.0")]
+    assert packagerbuddy.get_installed_software() == [os.path.join(install_dir, "valid-1.0.0"),
+                                                      os.path.join(install_dir, "valid-2.0.0")]
 
 
 def test_get_configs(patch_PB_CONFIGS):

@@ -287,7 +287,7 @@ def get_installed_software():
     """
     install_dir = get_install_location()
     pb_package_files = glob.glob(os.path.join(install_dir, "*", ".pbsoftware"))
-    return map(os.path.dirname, pb_package_files)
+    return sorted(map(os.path.dirname, pb_package_files))
 
 
 def get_configs():
@@ -297,7 +297,7 @@ def get_configs():
     :rtype: list[str]
     """
     configs_dir = get_configs_location()
-    return glob.glob(os.path.join(configs_dir, "*.json"))
+    return sorted(glob.glob(os.path.join(configs_dir, "*.json")))
 
 
 def get_software_from_config(name):
