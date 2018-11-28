@@ -5,7 +5,6 @@ import glob
 import shutil
 import urllib2
 import tarfile
-import subprocess
 
 
 # ============================================================================
