@@ -18,14 +18,17 @@ of itself.
 Usage
 --------
 ### Install software
-The `install` command requires two arguments. The `software` argument which needs to match an existing config.
+The `install` command requires two arguments. The `software` argument which needs to match an existing config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop. If you wish to force an install 
+again, the `force` flag covers this feature.
 
 ```
 # short notation
 packagerbuddy install -s foo -v 1.0.0
+packagerbuddy install -s foo -v 1.0.0 -f
 
 # long notation
 packagerbuddy install --software foo --version 1.0.0
+packagerbuddy install --software foo --version 1.0.0 --force
 
 # foo needs to match with a config named config_foo.json
 # 1.0.0 needs to form an existing url, formatted into the config url
@@ -79,9 +82,9 @@ Configure
 * `PB_CONFIGS` : Directory the software configs are located. 
   * default: configs directory of this repository (`./configs`)
 * `PB_DOWNLOAD` : Directory the software will be downloaded to.
-  * default: custom directory in the user home. (`~/software/source`)
+  * default: custom directory in the user home. (`~/software/.source`)
 * `PB_INSTALL`: Directory the software will be installed in.
-  * default: custom directory in the user home. (`~/software/installed`)
+  * default: custom directory in the user home. (`~/software/.installed`)
 
 ### Configs
 
