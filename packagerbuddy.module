@@ -7,5 +7,5 @@ prepend-path PATH $currentdir/bin
 prepend-path PYTHONPATH $currentdir/python
 
 setenv PB_CONFIGS $currentdir/configs
-setenv PB_DOWNLOAD ~/software/source
-setenv PB_INSTALL ~/software/installed
+setenv PB_DOWNLOAD ~/software/.source
+setenv PB_INSTALL ~/software/.installed
