@@ -413,7 +413,7 @@ def uninstall(software, version=None, dry_run=False):
     paths_by_name = {os.path.basename(p): p for p in installed}
 
     # group names by version for easy lookup
-    name_by_version = {n.split("-")[-1]: n for n in paths_by_name}
+    name_by_version = {n.split("-")[-1]: n for n in paths_by_name if n.startswith(software)}
 
     # get how many versions of software to uninstall
     to_uninstall = name_by_version.keys()
