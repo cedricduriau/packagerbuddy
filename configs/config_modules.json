@@ -1,0 +1,4 @@
+{
+    "url": "https://github.com/cea-hpc/modules/releases/download/v{version}/modules-{version}.tar.gz",
+    "extension": "tar.gz"
+}
