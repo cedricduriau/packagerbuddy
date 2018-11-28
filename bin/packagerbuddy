@@ -34,6 +34,9 @@ def _build_parser():
     help = "version of the software to install"
     req_args.add_argument("-v", "--version", required=True, help=help)
 
+    help = "force the install procedure again"
+    parser_install.add_argument("-f", "--force", action="store_true", help=help)
+
     # ========================================================================
     # list
     # ========================================================================
@@ -93,7 +96,9 @@ if __name__ == "__main__":
     action = namespace.which
 
     if action == "install":
-        packagerbuddy.install(namespace.software, namespace.version)
+        packagerbuddy.install(namespace.software,
+                              namespace.version,
+                              force=namespace.force)
     elif action == "list":
         msg = "No installed software found."
         installed = packagerbuddy.get_installed_software()
