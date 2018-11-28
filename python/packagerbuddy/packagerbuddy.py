@@ -5,6 +5,7 @@ import glob
 import shutil
 import urllib2
 import tarfile
+import subprocess
 
 
 # ============================================================================
@@ -200,7 +201,7 @@ def get_config(software):
         return json.load(fp)
 
 
-def install(software, version):
+def install(software, version, force=False):
     """
     Installs a specific release of a software.
 
@@ -209,8 +210,11 @@ def install(software, version):
 
     :param version: release of software to install
     :type version: str
+
+    :param force: set True to force the install procedure again
+    :type force: bool
     """
-    if is_software_installed(software, version):
+    if is_software_installed(software, version) and not force:
         print("{} v{} is already installed".format(software, version))
         return
 
@@ -252,9 +256,9 @@ def install(software, version):
         os.makedirs(install_dir)
 
     # install / move
+    print("installing ...")
     install_path = os.path.join(install_dir, os.path.basename(target_path))
     if not os.path.exists(install_path):
-        print("installing ...")
         shutil.move(target_path, install_path)
 
     # create .pbsoftware file
