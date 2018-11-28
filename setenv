@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
+export PATH=./bin:PATH
 export PYTHONPATH=./python:PYTHONPATH
 export PB_CONFIGS=./configs
-export PB_DOWNLOAD=~/software/source
-export PB_INSTALL=~/software/installed
+export PB_DOWNLOAD=~/software/.source
+export PB_INSTALL=~/software/.installed
