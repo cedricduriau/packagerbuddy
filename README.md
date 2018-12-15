@@ -15,6 +15,16 @@ Use Cases
 - I don't like how software auto-updates and installs a newer version 
 of itself.
 
+Install
+--------
+If you wish to install the current master, use the following command:
+
+`pip install git+git://github.com/cedricduriau/PackagerBuddy.git`
+
+Or a specific release version:
+
+`pip install git+git://github.com/cedricduriau/PackagerBuddy.git@v1.0.0`
+
 Usage
 --------
 ### Install software
