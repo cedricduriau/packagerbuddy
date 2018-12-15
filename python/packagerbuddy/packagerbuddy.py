@@ -76,21 +76,23 @@ def _untar(archive):
     """
     Unpacks a tarfile.
 
+    Contents of the tarfile will be extracted right now to the archive itself.
+
     :param archive: full path of tarfile to unpack
     :type archive: str
 
     :return: the path of the extracted content
     :rtype: str
     """
+    # https://docs.python.org/2.7/library/tarfile.html#tarfile.open
     read_mode = "r"
     if archive.endswith("tar.gz"):
         read_mode += ":gz"
-    elif archive.endswith("tar.bz"):
-        read_mode += ":bz"
+    elif archive.endswith("tar.bz2"):
+        read_mode += ":bz2"
 
     directory = os.path.dirname(archive)
     with tarfile.open(archive, read_mode) as tar:
-        # see warning: https://docs.python.org/2/library/tarfile.html#tarfile.TarFile.extractall
         tar.extractall(path=directory)
         return os.path.join(directory, tar.getnames()[0])
 
