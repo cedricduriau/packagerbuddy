@@ -22,29 +22,6 @@ def test_normalize_path():
     assert packagerbuddy._normalize_path("/tmp/dir/../test.txt") == "/tmp/test.txt"
 
 
-def test_read_environment_variable():
-    """Test reading the valid of a valid env var."""
-    # set test env var
-    os.environ["TEST"] = "/tmp"
-
-    # get env var value
-    assert packagerbuddy._read_environment_variable("TEST") == "/tmp"
-
-    # function returns normalized result so trailing sep should be gone
-    os.environ["TEST"] = "/tmp/"
-    assert packagerbuddy._read_environment_variable("TEST") == "/tmp"
-
-    # remove env var
-    os.environ.pop("TEST")
-
-
-def test_read_environment_variable_fail():
-    """Test reading the valid of an invalid env var."""
-    # reading from fictional env var with unique name based on uuid4
-    with pytest.raises(EnvironmentError):
-        assert packagerbuddy._read_environment_variable(str(uuid.uuid4()))
-
-
 def test_download():
     pass
 
