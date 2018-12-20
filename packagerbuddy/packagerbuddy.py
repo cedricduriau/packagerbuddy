@@ -158,7 +158,7 @@ def get_download_location():
 
     :rtype: str
     """
-    dir_download = os.getenv("PB_DOWNLOAD", "~/software/.source")
+    dir_download = os.getenv("PB_DOWNLOAD", "~/.packagerbuddy/source/")
     return _normalize_path(dir_download)
 
 
@@ -168,7 +168,7 @@ def get_install_location():
 
     :rtype: str
     """
-    dir_install = os.getenv("PB_INSTALL", "~/software/.installed")
+    dir_install = os.getenv("PB_INSTALL", "~/.packagerbuddy/installed/")
     return _normalize_path(dir_install)
 
 
@@ -423,3 +423,16 @@ def uninstall(software, version=None, dry_run=False):
         print("uninstalling {} ...".format(name))
         if not dry_run:
             shutil.rmtree(path)
+
+
+def setup():
+    """Ensures all default directories exist."""
+    dir_configs = get_configs_location()
+    dir_download = get_download_location()
+    dir_install = get_install_location()
+
+    # create directories
+    for d in [dir_configs, dir_download, dir_install]:
+        if not os.path.exists(d):
+            print("creating {}".format(d))
+            os.makedirs(d)
