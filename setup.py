@@ -10,4 +10,5 @@ setup(name="PackagerBuddy",
       author_email="duriau.cedric@live.be",
       url="https://github.com/cedricduriau/PackagerBuddy",
       packages=["packagerbuddy"],
-      scripts=["bin/packagerbuddy"])
+      scripts=["bin/packagerbuddy"],
+      include_package_data=True)
