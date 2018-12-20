@@ -147,8 +147,7 @@ def get_configs_location():
 
     :rtype: str
     """
-    repo_root = os.path.dirname(os.path.dirname(packagerbuddy.__file__))
-    dir_configs = os.getenv("PB_CONFIGS", os.path.join(repo_root, "configs"))
+    dir_configs = os.getenv("PB_CONFIGS", "~/.packagerbuddy/configs/")
     return _normalize_path(dir_configs)
 
 
