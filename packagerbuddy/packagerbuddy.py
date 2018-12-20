@@ -7,9 +7,6 @@ import shutil
 import urllib2
 import tarfile
 
-# tool modules
-import packagerbuddy
-
 
 # ============================================================================
 # private
