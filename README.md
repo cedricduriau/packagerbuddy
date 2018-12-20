@@ -1,21 +1,20 @@
-PackagerBuddy
-==============
+# PackagerBuddy
 
 [![Build Status](https://travis-ci.org/cedricduriau/PackagerBuddy.svg?branch=master)](https://travis-ci.org/cedricduriau/PackagerBuddy)
 [![codecov](https://codecov.io/gh/cedricduriau/PackagerBuddy/branch/master/graph/badge.svg)](https://codecov.io/gh/cedricduriau/PackagerBuddy)
 
-Overview
+## Overview
 --------
 PackagerBuddy is a JSON config based software packager written entirely in Python.
 
 Use Cases
---------
+
 - I set up (virtual) machines often and want to have a quick way of setting up software.
 - I run multiple versions of the same software package.
 - I don't like how software auto-updates and installs a newer version 
 of itself.
 
-Install
+## Install
 --------
 If you wish to install the current master, use the following command:
 
@@ -25,8 +24,15 @@ Or a specific release version:
 
 `pip install git+git://github.com/cedricduriau/PackagerBuddy.git@v1.0.0`
 
-Usage
+After successfully installing the repository, run the following command:
+
+`packagerbuddy setup`
+
+This will create all default directories and copy the default configurations that ship with the repository. (see [Config](#Config))
+
+## Usage
 --------
+
 ### Install software
 The `install` command requires two arguments. The `software` argument which needs to match an existing config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop. If you wish to force an install 
 again, the `force` flag covers this feature.
@@ -84,17 +90,17 @@ packagerbuddy uninstall --software foo --dry-run
 ```
 
 
-Configure
+## Configure
 --------
 
 ### Environment Variables
 
 * `PB_CONFIGS` : Directory the software configs are located. 
-  * default: configs directory of this repository (`./configs`)
+  * default: custom directory in the user home. (`~/.packagerbuddy/configs`)
 * `PB_DOWNLOAD` : Directory the software will be downloaded to.
-  * default: custom directory in the user home. (`~/software/.source`)
+  * default: custom directory in the user home. (`~/.packagerbuddy/source`)
 * `PB_INSTALL`: Directory the software will be installed in.
-  * default: custom directory in the user home. (`~/software/.installed`)
+  * default: custom directory in the user home. (`~/.packagerbuddy/installed`)
 
 ### Configs
 
