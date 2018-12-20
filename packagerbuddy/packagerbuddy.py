@@ -1,6 +1,7 @@
 # stdlib modules
 from __future__ import absolute_import
 import os
+import sys
 import json
 import glob
 import shutil
@@ -422,13 +423,20 @@ def uninstall(software, version=None, dry_run=False):
 
 
 def setup():
-    """Ensures all default directories exist."""
+    """Ensures all default directories exist and default configs are copied."""
+    # create directories
     dir_configs = get_configs_location()
     dir_download = get_download_location()
     dir_install = get_install_location()
 
-    # create directories
     for d in [dir_configs, dir_download, dir_install]:
         if not os.path.exists(d):
             print("creating {}".format(d))
             os.makedirs(d)
+
+    # copy configs
+    default_configs = glob.glob(os.path.join(sys.prefix, "configs", "*.json"))
+    for f in default_configs:
+        if not os.path.exists(os.path.join(dir_configs, os.path.basename(f))):
+            print("copying {} -> {}".format(f, dir_configs))
+            shutil.copy2(f, dir_configs)
