@@ -28,7 +28,7 @@ After successfully installing the repository, run the following command:
 
 `packagerbuddy setup`
 
-This will create all default directories and copy the default configurations that ship with the repository. (see [Config](#Config))
+This will create all default directories and copy the default configurations that ship with the repository. (see [Configure](#Configure))
 
 ## Usage
 
