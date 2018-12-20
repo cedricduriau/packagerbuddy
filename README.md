@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/cedricduriau/PackagerBuddy/branch/master/graph/badge.svg)](https://codecov.io/gh/cedricduriau/PackagerBuddy)
 
 ## Overview
---------
+
 PackagerBuddy is a JSON config based software packager written entirely in Python.
 
 Use Cases
@@ -15,7 +15,7 @@ Use Cases
 of itself.
 
 ## Install
---------
+
 If you wish to install the current master, use the following command:
 
 `pip install git+git://github.com/cedricduriau/PackagerBuddy.git`
@@ -31,7 +31,6 @@ After successfully installing the repository, run the following command:
 This will create all default directories and copy the default configurations that ship with the repository. (see [Config](#Config))
 
 ## Usage
---------
 
 ### Install software
 The `install` command requires two arguments. The `software` argument which needs to match an existing config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop. If you wish to force an install 
@@ -91,7 +90,6 @@ packagerbuddy uninstall --software foo --dry-run
 
 
 ## Configure
---------
 
 ### Environment Variables
 
