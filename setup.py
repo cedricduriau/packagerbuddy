@@ -1,5 +1,17 @@
 # stdlib modules
+import os
 from setuptools import setup
+
+
+def get_default_configs():
+    """
+    Gets the default configuration files that ship with the repository.
+
+    :rtype: list[str]
+    """
+    dirname = "configs"
+    dir_configs = os.path.join(os.path.dirname(__file__), dirname)
+    return [os.path.join(dirname, f) for f in os.listdir(dir_configs)]
 
 
 setup(name="PackagerBuddy",
@@ -11,4 +23,4 @@ setup(name="PackagerBuddy",
       url="https://github.com/cedricduriau/PackagerBuddy",
       packages=["packagerbuddy"],
       scripts=["bin/packagerbuddy"],
-      include_package_data=True)
+      data_files=[("configs", get_default_configs())])
