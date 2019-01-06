@@ -5,3 +5,4 @@ conflict packagerbuddy
 
 prepend-path PATH $currentdir/bin
 prepend-path PYTHONPATH $currentdir
+setenv PB_CONFIGS $currentdir/configs

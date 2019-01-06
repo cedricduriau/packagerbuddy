@@ -116,7 +116,7 @@ def test_get_software_from_config():
 
 def test_get_suported_extensions():
     """Test getting the supported software archive extensions."""
-    assert packagerbuddy.get_suported_extensions() == set(["tar", "tar.gz", "tar.bz"])
+    assert packagerbuddy.get_suported_extensions() == set([".tar", ".tar.gz", ".tar.bz"])
 
 
 def test_validate_config_name():
@@ -149,7 +149,8 @@ def test_validate_config_name_fail():
 
 def test_validate_config(patch_urllib2):
     """Test validating a valid software config."""
-    packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": "tar"}, "1.0.0")
+    config = {"url": "http://valid.com/{version}.tar.gz"}
+    packagerbuddy.validate_config(config, "1.0.0")
 
 
 def test_validate_config_fail(patch_urllib2):
@@ -158,40 +159,44 @@ def test_validate_config_fail(patch_urllib2):
 
     # missing key url
     with pytest.raises(KeyError):
-        packagerbuddy.validate_config({"extension": None}, version)
-
-    # missing key extension
-    with pytest.raises(KeyError):
-        packagerbuddy.validate_config({"url": None}, version)
+        packagerbuddy.validate_config({"foo": None}, version)
 
     # no url value
+    config = {"url": None, "extension": None}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": None, "extension": None}, version)
+        packagerbuddy.validate_config(config, version)
 
     # url without version placeholder format
+    config = {"url": "http://invalid.com.tar.gz"}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://invalid.com", "extension": None}, version)
+        packagerbuddy.validate_config(config, version)
 
     # invalid url
+    config = {"url": "http://invalid.com/{version}.tar.gz"}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://invalid.com/{version}", "extension": None}, version)
-
-    # no extension
-    with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": None}, version)
-
-    # invalid extension, leading dot
-    with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": ".tar"}, version)
+        packagerbuddy.validate_config(config, version)
 
     # invalid extension, unsupported
+    config = {"url": "http://valid.com/{version}.FOO"}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config({"url": "http://valid.com/{version}", "extension": "foo"}, version)
+        packagerbuddy.validate_config(config, version)
 
 
 def test_build_download_url():
     """Test building a download url."""
     packagerbuddy._build_download_url("http://valid.com/{version}", "1.0.0") == "http://valid.com/1.0.0"
+
+
+def test_get_archive(patch_PB_DOWNLOAD):
+    download_dir = os.environ["PB_DOWNLOAD"]
+    assert packagerbuddy._get_archive("invalid", "1.0.0") is None
+    archive = packagerbuddy._get_archive("valid", "1.0.0")
+    assert archive == os.path.join(download_dir, "valid-1.0.0.tar.gz")
+
+
+def test_split_ext():
+    assert packagerbuddy.split_ext("/tmp/foo.tar") == ("/tmp/foo", ".tar")
+    assert packagerbuddy.split_ext("/tmp/foo.tar.gz") == ("/tmp/foo", ".tar.gz")
 
 
 def test_uninstall():
