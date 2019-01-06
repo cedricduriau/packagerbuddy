@@ -24,19 +24,27 @@ def _normalize_path(path):
     return os.path.abspath(os.path.expanduser(path))
 
 
-def _download(url, to):
+def _download(url, directory):
     """
     Downloads the content of an URL to a location.
 
     :param url: url to from
     :type url: str
 
-    :param to: full path to download to
-    :type to: str
+    :param directory: directory to download to
+    :type directory: str
+
+    :return: full path of downloaded archive
+    :rtype: str
     """
-    f = urllib2.urlopen(url)
-    with open(to, "wb") as local_f:
-        local_f.write(f.read())
+    request = urllib2.urlopen(url)
+    archive_name = os.path.basename(request.url)
+
+    archive_path = os.path.join(directory, archive_name)
+    with open(archive_path, "wb+") as fp:
+        fp.write(request.read())
+
+    return archive_path
 
 
 def _build_archive_name(software, version, extension):
@@ -136,6 +144,42 @@ def _build_download_url(template, version):
     return template.format(version=version)
 
 
+def _get_archive(software, version):
+    """
+    Gets the downloaded source archive for a software version.
+
+    :param software: software to get the downloaded source archive for
+    :type software: str
+
+    :param version: software release
+    :type version: str
+    """
+    download_dir = get_download_location()
+    archives = os.listdir(download_dir)
+    prefix = "{}-{}.".format(software, version)
+
+    for archive in archives:
+        if archive.startswith(prefix):
+            return os.path.join(download_dir, archive)
+
+    return None
+
+
+def split_ext(path):
+    """
+    Splits a path from its extension.
+
+    :param path: path to split
+    :type path: str
+
+    :return: path excluding extension and extension
+    :rtype: str, str
+    """
+    if len(path.split(".")) > 2:
+        return path.split(".")[0], "." + ".".join(path.split(".")[-2:])
+    return os.path.splitext(path)
+
+
 # ============================================================================
 # public
 # ============================================================================
@@ -213,21 +257,26 @@ def install(software, version, force=False):
     # validate config
     validate_config(config, version)
 
-    template = config["url"]
-    extension = config["extension"]
-
-    # ensure download location exists
-    download_dir = get_download_location()
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-
     # download
     print("downloading ...")
-    url = template.format(version=version)
-    archive_name = _build_archive_name(software, version, extension)
-    archive_path = os.path.join(download_dir, archive_name)
-    if not os.path.exists(archive_path):
-        _download(url, archive_path)
+    download_dir = get_download_location()
+    url = config["url"].format(version=version)
+
+    archive_path = _get_archive(software, version)
+    if archive_path is None:
+        # download
+        source = _download(url, download_dir)
+
+        # rename
+        extension = split_ext(source)[1]
+        archive_name = _build_archive_name(software, version, extension)
+        archive_path = os.path.join(download_dir, archive_name)
+
+        if os.path.basename(source) != archive_name:
+            os.rename(source, archive_path)
+    else:
+        extension = split_ext(archive_path)[1]
+        archive_name = os.path.basename(archive_path)
 
     # unpack
     print("unpacking ...")
@@ -239,19 +288,17 @@ def install(software, version, force=False):
     if not os.path.exists(target_path):
         os.rename(unpacked_dir, target_path)
 
-    # ensure install location exists
-    install_dir = get_install_location()
-    if not os.path.exists(install_dir):
-        os.makedirs(install_dir)
-
     # install / move
     print("installing ...")
+    install_dir = get_install_location()
     install_path = os.path.join(install_dir, os.path.basename(target_path))
     if not os.path.exists(install_path):
         shutil.move(target_path, install_path)
 
     # create .pbsoftware file
-    open(os.path.join(install_path, ".pbsoftware"), "w+").close()
+    cache_file = os.path.join(install_path, ".pbsoftware")
+    if not os.path.exists(cache_file):
+        open(cache_file, "w+").close()
 
 
 def is_software_installed(software, version):
@@ -268,8 +315,8 @@ def is_software_installed(software, version):
     """
     target_name = "-".join([software, version])
     install_dir = get_install_location()
-    pb_package_file = os.path.join(install_dir, target_name, ".pbsoftware")
-    return os.path.exists(pb_package_file)
+    cache_file = os.path.join(install_dir, target_name, ".pbsoftware")
+    return os.path.exists(cache_file)
 
 
 def get_installed_software():
@@ -313,7 +360,7 @@ def get_suported_extensions():
 
     :rtype: set[str]
     """
-    return {"tar", "tar.gz", "tar.bz"}
+    return {".tar", ".tar.gz", ".tar.bz"}
 
 
 def validate_config_name(name):
@@ -345,14 +392,11 @@ def validate_config(config, version):
     :raises ValueError: if url has no version placeholder
     :raises ValueError: if url is invalid
     :raises ValueError: if extension is empty
-    :raises ValueError: if extension starts with a dot
     :raises ValueError: if extension is not supported
     """
     # keys
-    req_keys = ["url", "extension"]
-    for k in req_keys:
-        if k not in config:
-            raise KeyError("missing key {!r}".format(k))
+    if "url" not in config:
+        raise KeyError("missing key 'url'")
 
     # url
     url = config["url"]
@@ -361,25 +405,21 @@ def validate_config(config, version):
 
     format_key = r"{version}"
     if format_key not in url:
-        raise ValueError("invalid url {!r}, needs to contain a {!r} placeholder".format(url, format_key))
+        raise ValueError("invalid url {!r}, needs to contain a {!r} "
+                         "placeholder".format(url, format_key))
 
     try:
         url = _build_download_url(url, version)
-        urllib2.urlopen(url)
+        result = urllib2.urlopen(url)
     except Exception as e:
         raise ValueError("invalid url {} ({})".format(url, str(e)))
 
     # extension
-    ext = config["extension"]
-    if not ext:
-        raise ValueError("extension is empty")
-
-    if ext.startswith("."):
-        raise ValueError("invalid extension {!r}, cannot include leading dot".format(ext))
-
+    ext = split_ext(result.url)[1]
     valid_exts = get_suported_extensions()
     if ext not in valid_exts:
-        raise ValueError("invalid extension {!r}, valid extensions are: {}".format(ext, ", ".join(valid_exts)))
+        raise ValueError("invalid extension {!r}, valid extensions are: "
+                         "{}".format(ext, ", ".join(valid_exts)))
 
 
 def uninstall(software, version=None, dry_run=False):
