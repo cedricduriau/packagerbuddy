@@ -53,7 +53,7 @@ packagerbuddy install --software foo --version 1.0.0 --force
 Installing consists of four steps:
 
 1. Download the software from the url in the configs to the designated download directory.
-2. Unpack the downloaded content based on the extension in the config.
+2. Unpack the downloaded content.
 3. Install/move the unpacked content to the designated install directory.
 4. Create a package file inside the installed directory.
 
@@ -103,17 +103,15 @@ packagerbuddy uninstall --software foo --dry-run
 ### Configs
 
 Software configuration files are small and easy to set up.
-They consist of two keys, the download url template and an extension.
+They consist only one key, the download url template.
 
 ```
 // example config_foo.json
 {
-    "url": "https://software.com/{version}",
-    "extension": "tar.gz"
+    "url": "https://software.com/{version}"
 }
 ```
 
 * `url`: Web address triggering the download of a release of the software, with the release version replaced by a {version} placeholder.
-* `extension`: Extension of the content of the web adress determining how to unpack the content.
 
 TIPS-N-TRICKS: You can figure out the download url of a software by going the standard route, browse to the download page and when you found a link that triggers the automatic download, right click on that link and open it in a new page. You can then evaluate safely the address and figure out where to replace the release version with the {version} placeholder.
