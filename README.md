@@ -32,6 +32,29 @@ This will create all default directories and copy the default configuration file
 
 ## Usage
 
+### Add software
+The add command requires two arguments. The `software` argument used as alias to interact with, and the `url` argument which needs to be an url containing a version placeholder.
+
+```
+# short notation
+packagerbuddy add -s foo -u http://foo.com/releases/{version}
+
+# long notation
+packagerbuddy add --software foo --url http://foo.com/releases/{version}
+```
+
+### Remove software
+
+The remove command requires a single argument, the `software` argument, which needs to match an already added software. To list the available software packages, see `avail` command below.
+
+```
+# short notation
+packagerbuddy remove -s foo
+
+# long notiation
+packagerbuddy remove --software foo
+```
+
 ### Install software
 The `install` command requires two arguments. The `software` argument which needs to match an alias in the software config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop. If you wish to force an install 
 again, the `force` flag covers this feature.
@@ -95,20 +118,3 @@ packagerbuddy uninstall --software foo --dry-run
   * default: custom directory in the user home. (`~/.packagerbuddy/source`)
 * `PB_INSTALL`: Directory the software will be installed in.
   * default: custom directory in the user home. (`~/.packagerbuddy/installed`)
-
-### Config
-
-Adding a software package to support is an easy task. This is done by adding an alias of the software as key and its download url template as value to the software configuration file.
-
-```
-// example software.json
-{
-    "software": "https://software.com/{version}",
-    "other-software": "https://other-software.com/{version}"
-}
-
-```
-
-All values need to be web addresses triggering the download of a release of the software, with the release version replaced by a {version} placeholder.
-
-TIPS-N-TRICKS: You can figure out the download url of a software by going the standard route, browse to the download page and when you found a link that triggers the automatic download, right click on that link and open it in a new page. You can then evaluate safely the address and figure out where to replace the release version with the {version} placeholder.
