@@ -193,3 +193,18 @@ def test_remove_software(patch_PB_CONFIG):
 
     config = packagerbuddy.get_config()
     assert "test" not in config
+
+
+def test_validate_extension():
+    """Test validating a valid extension."""
+    packagerbuddy.validate_extension(".tar")
+    packagerbuddy.validate_extension(".tar.gz")
+
+
+def test_validate_extension_fail():
+    """Test validating an invalid extension."""
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_extension("")
+
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_extension(".foo")
