@@ -135,8 +135,15 @@ def _split_ext(path):
     :rtype: str, str
     """
     if len(path.split(".")) > 2 and not path.endswith(".tar"):
-        return path.split(".")[0], "." + ".".join(path.split(".")[-2:])
-    return os.path.splitext(path)
+        path, ext = path.split(".")[0], "." + ".".join(path.split(".")[-2:])
+    else:
+        path, ext = os.path.splitext(path)
+
+    # dump extra header data
+    if "&" in ext:
+        ext = ext.split("&")[0]
+
+    return path, ext
 
 
 # ============================================================================
