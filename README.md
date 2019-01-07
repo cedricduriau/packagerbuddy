@@ -109,6 +109,6 @@ Adding a software package to support is an easy task. This is done by adding an 
 
 ```
 
-All values need to be web addresses  triggering the download of a release of the software, with the release version replaced by a {version} placeholder.
+All values need to be web addresses triggering the download of a release of the software, with the release version replaced by a {version} placeholder.
 
 TIPS-N-TRICKS: You can figure out the download url of a software by going the standard route, browse to the download page and when you found a link that triggers the automatic download, right click on that link and open it in a new page. You can then evaluate safely the address and figure out where to replace the release version with the {version} placeholder.
