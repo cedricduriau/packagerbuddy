@@ -1,0 +1,5 @@
+{
+    "modules": "https://github.com/cea-hpc/modules/releases/download/v{version}/modules-{version}.tar.gz",
+    "pycharm-community": "https://download.jetbrains.com/python/pycharm-community-{version}.tar.gz",
+    "vscode": "https://vscode-update.azurewebsites.net/{version}/linux-x64/stable"
+}
