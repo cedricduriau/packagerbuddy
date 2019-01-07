@@ -319,10 +319,7 @@ def validate_config(config, software, version):
         raise ValueError("url for software {!r} is empty".format(software))
 
     # does url have version placeholder
-    format_key = r"{version}"
-    if format_key not in url:
-        raise ValueError("invalid url {!r} for software {!r}, needs to contain"
-                         "a {!r} placeholder".format(url, software, format_key))
+    validate_template_url(url)
 
     # is url valid
     url = _build_download_url(url, version)
@@ -397,3 +394,81 @@ def setup():
     if not os.path.exists(path_config):
         print("copying {} -> {}".format(default_config, path_config))
         shutil.copy2(default_config, path_config)
+
+
+def validate_template_url(url):
+    """
+    Validates a download url template.
+
+    :param url: url to validate
+    :type url: str
+
+    :raises ValueError: if no version placeholder is present in url
+    """
+    format_key = r"{version}"
+    if format_key not in url:
+        msg = "no format key {!r} found in url {!r}"
+        raise ValueError(msg.format(format_key, url))
+
+
+def validate_software(software):
+    """
+    Validates a software name.
+
+    :param software: software to validate
+    :type software: str
+
+    :raises ValueError: if software name is empty
+    :raises ValueError: if software name is only consists of whitespace(s)
+    """
+    # empty
+    if not software:
+        raise ValueError("software cannot be empty")
+
+    # only whitespace(s)
+    if software.strip() == "":
+        raise ValueError("software cannot be whitespace only")
+
+
+def add_software(software, url):
+    """
+    Adds a software configuration.
+
+    :param software: name of the software to add
+    :type software: str
+
+    :param url: download url template of the software
+    :type url: str
+    """
+    validate_software(software)
+
+    config = get_config()
+    if software in config:
+        print("software {!r} already added".format(software))
+        return
+
+    validate_template_url(url)
+    config[software] = url
+
+    # write out changes
+    with open(get_config_location(), "w") as fp:
+        json.dump(config, fp)
+
+
+def remove_software(software):
+    """
+    Removes a software configuration.
+
+    :param software: software to remove
+    """
+    config = get_config()
+
+    try:
+        config.pop(software)
+    except KeyError:
+        print("software {!r} is not present in config".format(software))
+        return
+
+    # write out changes
+    with open(get_config_location(), "w") as fp:
+        json.dump(config, fp)

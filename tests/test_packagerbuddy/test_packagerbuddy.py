@@ -136,3 +136,59 @@ def test_validate_config_fail(patch_urllib2):
 
 def test_uninstall():
     pass
+
+
+def test_validate_template_url():
+    """Test validating an valid download template url."""
+    packagerbuddy.validate_template_url("http://test.com/{version}")
+
+
+def test_validate_template_url_fail():
+    """Test validating an invalid download template url."""
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_template_url("http://test.com/")
+
+
+def test_validate_software():
+    """Test validating a valid software name."""
+    packagerbuddy.validate_software("test")
+
+
+def test_validate_software_fail():
+    """Test validating an invalid software name."""
+    # empty
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_software("")
+
+    # whitespaces
+    with pytest.raises(ValueError):
+        packagerbuddy.validate_software(" ")
+
+
+def test_add_software(patch_PB_CONFIG):
+    """Test adding a software configuration."""
+    config = packagerbuddy.get_config()
+    assert "test" not in config
+
+    # add twice
+    packagerbuddy.add_software("test", "http://test.com/{version}")
+    packagerbuddy.add_software("test", "http://test.com/{version}")
+
+    config = packagerbuddy.get_config()
+    assert "test" in config
+    assert config["test"] == "http://test.com/{version}"
+    packagerbuddy.remove_software("test")
+
+
+def test_remove_software(patch_PB_CONFIG):
+    """Test removing a software configuration."""
+    packagerbuddy.add_software("test", "http://test.com/{version}")
+    config = packagerbuddy.get_config()
+    assert "test" in config
+
+    # remove twice
+    packagerbuddy.remove_software("test")
+    packagerbuddy.remove_software("test")
+
+    config = packagerbuddy.get_config()
+    assert "test" not in config
