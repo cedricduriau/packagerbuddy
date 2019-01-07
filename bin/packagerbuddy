@@ -26,6 +26,33 @@ def _build_parser():
     parser_setup.set_defaults(which="setup")
 
     # ========================================================================
+    # add
+    # ========================================================================
+    help = "add a software configuration"
+    parser_add = subparsers.add_parser("add", help=help)
+    parser_add.set_defaults(which="add")
+
+    # required arguments
+    req_args = parser_add.add_argument_group("required arguments")
+
+    help = "name of the software"
+    req_args.add_argument("-s", "--software", help=help)
+
+    help = "download url template"
+    req_args.add_argument("-u", "--url", help=help)
+
+    # ========================================================================
+    # remove
+    # ========================================================================
+    help = "remove a software configuration"
+    parser_remove = subparsers.add_parser("remove", help=help)
+    parser_remove.set_defaults(which="remove")
+
+    # required arguments
+    req_args = parser_remove.add_argument_group("required arguments")
+    req_args.add_argument("-s", "--software", help="name of the software")
+
+    # ========================================================================
     # install
     # ========================================================================
     help = "installs a software version"
@@ -125,3 +152,7 @@ if __name__ == "__main__":
                                 dry_run=namespace.dry_run)
     elif action == "setup":
         packagerbuddy.setup()
+    elif action == "add":
+        packagerbuddy.add_software(namespace.software, namespace.url)
+    elif action == "remove":
+        packagerbuddy.remove_software(namespace.software)
