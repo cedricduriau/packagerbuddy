@@ -233,7 +233,7 @@ def install(software, version, force=False):
     target_path = os.path.join(download_dir, target_name)
     if not os.path.exists(target_path):
         # extract
-        unpacked_dir = _untar(archive_path, extension)
+        unpacked_dir = _untar(archive_path)
 
         # rename
         if not os.path.exists(target_path):
