@@ -38,7 +38,11 @@ def _download(url, directory):
     :rtype: str
     """
     request = urllib2.urlopen(url)
-    archive_name = os.path.basename(request.url)
+    try:
+        headers = request.headers
+        archive_name = headers["content-disposition"].split("filename=")[1]
+    except KeyError:
+        archive_name = os.path.basename(request.url)
 
     archive_path = os.path.join(directory, archive_name)
     with open(archive_path, "wb+") as fp:
@@ -224,7 +228,12 @@ def install(software, version, force=False):
         source = _download(url, download_dir)
 
         # rename
-        extension = _split_ext(source)[1]
+        try:
+            extension = _split_ext(url)[1]
+            validate_extension(extension)
+        except ValueError:
+            extension = _split_ext(source)[1]
+
         archive_name = _build_archive_name(software, version, extension)
         archive_path = os.path.join(download_dir, archive_name)
 
@@ -338,10 +347,7 @@ def validate_config(config, software, version):
 
     # is extension valid
     ext = _split_ext(result.url)[1]
-    valid_exts = get_suported_extensions()
-    if ext not in valid_exts:
-        raise ValueError("invalid extension {!r}, valid extensions are: "
-                         "{}".format(ext, ", ".join(valid_exts)))
+    validate_extension(ext)
 
 
 def uninstall(software, version=None, dry_run=False):
@@ -480,3 +486,18 @@ def remove_software(software):
     # write out changes
     with open(get_config_location(), "w") as fp:
         json.dump(config, fp)
+
+
+def validate_extension(extension):
+    """
+    Validates an extension.
+
+    :param extension: extension to validate
+    :type extension: str
+
+    :raises ValueError: if extension is not supported
+    """
+    valid_exts = get_suported_extensions()
+    if extension not in valid_exts:
+        msg = "invalid extension {!r}, valid extensions are: {}"
+        raise ValueError(msg.format(extension, ", ".join(valid_exts)))
