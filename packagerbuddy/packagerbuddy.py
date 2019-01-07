@@ -392,6 +392,7 @@ def setup():
     # copy config
     default_config = os.path.join(sys.prefix, "config", "software.json")
     if not os.path.exists(path_config):
+        os.makedirs(os.path.dirname(path_config))
         print("copying {} -> {}".format(default_config, path_config))
         shutil.copy2(default_config, path_config)
 
