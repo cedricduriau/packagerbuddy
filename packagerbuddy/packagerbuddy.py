@@ -90,47 +90,6 @@ def _untar(archive):
         return os.path.join(directory, tar.getnames()[0])
 
 
-def _unpack(archive, extension):
-    """
-    Unpacks an archive file.
-
-    :param archive: archive file to unpack
-    :type archive: str
-
-    :param extension: extension of the archive determining how to unpack it
-    :type extension: str
-
-    :return: path of the unpacked content
-    :rtype: str
-    """
-    if "tar" in extension:
-        return _untar(archive)
-
-
-def _build_config_name(software):
-    """
-    Builds the name of a software config.
-
-    :param software: software to build the config name for
-    :type software: str
-
-    :rtype: str
-    """
-    return "config_{software}.json".format(software=software)
-
-
-def _get_config_path(name):
-    """
-    Gets the full path of a software config.
-
-    :param name: name of the config to get full path for
-    :type name: str
-
-    :rtype: str
-    """
-    return os.path.join(get_configs_location(), name)
-
-
 def _build_download_url(template, version):
     """
     Builds the software release download url.
@@ -165,7 +124,7 @@ def _get_archive(software, version):
     return None
 
 
-def split_ext(path):
+def _split_ext(path):
     """
     Splits a path from its extension.
 
@@ -175,7 +134,7 @@ def split_ext(path):
     :return: path excluding extension and extension
     :rtype: str, str
     """
-    if len(path.split(".")) > 2:
+    if len(path.split(".")) > 2 and not path.endswith(".tar"):
         return path.split(".")[0], "." + ".".join(path.split(".")[-2:])
     return os.path.splitext(path)
 
@@ -183,14 +142,15 @@ def split_ext(path):
 # ============================================================================
 # public
 # ============================================================================
-def get_configs_location():
+def get_config_location():
     """
-    Returns the location of the software configs.
+    Returns the full path of the software config.
 
     :rtype: str
     """
-    dir_configs = os.getenv("PB_CONFIGS", "~/.packagerbuddy/configs/")
-    return _normalize_path(dir_configs)
+    default = "~/.packagerbuddy/config/software.json"
+    path_config = os.getenv("PB_CONFIG", default)
+    return _normalize_path(path_config)
 
 
 def get_download_location():
@@ -213,24 +173,13 @@ def get_install_location():
     return _normalize_path(dir_install)
 
 
-def get_config(software):
+def get_config():
     """
-    Returns the config for a software.
-
-    :param software: software to get config for
-    :type software: str
-
-    :raises ValueError: if no config could be found for given software
+    Returns the software config.
 
     :rtype: dict
     """
-    name = _build_config_name(software)
-    path = _get_config_path(name)
-
-    if not os.path.exists(path):
-        raise ValueError("no config found for software {!r}".format(software))
-
-    with open(path, "r") as fp:
+    with open(get_config_location(), "r") as fp:
         return json.load(fp)
 
 
@@ -252,15 +201,15 @@ def install(software, version, force=False):
         return
 
     # get config
-    config = get_config(software)
+    config = get_config()
 
-    # validate config
-    validate_config(config, version)
+    # validate config for software and version
+    validate_config(config, software, version)
 
     # download
     print("downloading ...")
     download_dir = get_download_location()
-    url = config["url"].format(version=version)
+    url = config[software].format(version=version)
 
     archive_path = _get_archive(software, version)
     if archive_path is None:
@@ -268,25 +217,27 @@ def install(software, version, force=False):
         source = _download(url, download_dir)
 
         # rename
-        extension = split_ext(source)[1]
+        extension = _split_ext(source)[1]
         archive_name = _build_archive_name(software, version, extension)
         archive_path = os.path.join(download_dir, archive_name)
 
         if os.path.basename(source) != archive_name:
             os.rename(source, archive_path)
     else:
-        extension = split_ext(archive_path)[1]
+        extension = _split_ext(archive_path)[1]
         archive_name = os.path.basename(archive_path)
 
-    # unpack
-    print("unpacking ...")
-    unpacked_dir = _unpack(archive_path, extension)
-
-    # rename
+    # extract
+    print("extracting ...")
     target_name = archive_name.replace(extension, "").rstrip(".")
     target_path = os.path.join(download_dir, target_name)
     if not os.path.exists(target_path):
-        os.rename(unpacked_dir, target_path)
+        # extract
+        unpacked_dir = _untar(archive_path, extension)
+
+        # rename
+        if not os.path.exists(target_path):
+            os.rename(unpacked_dir, target_path)
 
     # install / move
     print("installing ...")
@@ -330,30 +281,6 @@ def get_installed_software():
     return sorted(map(os.path.dirname, pb_package_files))
 
 
-def get_configs():
-    """
-    Gets the paths of the available software configs.
-
-    :rtype: list[str]
-    """
-    configs_dir = get_configs_location()
-    return sorted(glob.glob(os.path.join(configs_dir, "*.json")))
-
-
-def get_software_from_config(name):
-    """
-    Gets the name of the software from a software config path or filename.
-
-    :param name: path of filename of a software config
-    :type name: str
-
-    :rtype: str
-    """
-    validate_config_name(name)
-    name = os.path.splitext(os.path.basename(name))[0]
-    return name.replace("config_", "")
-
-
 def get_suported_extensions():
     """
     Returns the supported software archive extensions.
@@ -363,59 +290,50 @@ def get_suported_extensions():
     return {".tar", ".tar.gz", ".tar.bz"}
 
 
-def validate_config_name(name):
-    """
-    Validates the name of a software config.
-
-    :raises ValueError: if the software config name does not start with _config
-    :raises ValueError: if the software config name does not end with .json
-    """
-    name = os.path.basename(name)
-
-    if not name.startswith("config_"):
-        raise ValueError("invalid name {!r}, does not start with 'config_'".format(name))
-
-    if not name.endswith(".json"):
-        raise ValueError("invalid name {!r}, does not end with '.json'".format(name))
-
-
-def validate_config(config, version):
+def validate_config(config, software, version):
     """
     Validates a software config.
 
     :param config: software config to validate
     :type config: dict
 
-    :raises KeyError: if url key is missing
-    :raises KeyError: if extension key is missing
+    :param software: software to validate in config
+    :type config: str
+
+    :param config: release of software to validate in config
+    :type config: str
+
+    :raises KeyError: if software is not in config
     :raises ValueError: if url is empty
     :raises ValueError: if url has no version placeholder
     :raises ValueError: if url is invalid
-    :raises ValueError: if extension is empty
     :raises ValueError: if extension is not supported
     """
-    # keys
-    if "url" not in config:
-        raise KeyError("missing key 'url'")
+    # is software in config
+    if software not in config:
+        raise KeyError("software {!r} has no configuration".format(software))
 
-    # url
-    url = config["url"]
+    # is url empty
+    url = config[software]
     if not url:
-        raise ValueError("url is empty")
+        raise ValueError("url for software {!r} is empty".format(software))
 
+    # does url have version placeholder
     format_key = r"{version}"
     if format_key not in url:
-        raise ValueError("invalid url {!r}, needs to contain a {!r} "
-                         "placeholder".format(url, format_key))
+        raise ValueError("invalid url {!r} for software {!r}, needs to contain"
+                         "a {!r} placeholder".format(url, software, format_key))
 
+    # is url valid
+    url = _build_download_url(url, version)
     try:
-        url = _build_download_url(url, version)
         result = urllib2.urlopen(url)
     except Exception as e:
-        raise ValueError("invalid url {} ({})".format(url, str(e)))
+        raise ValueError("invalid url {!r} for software {!r} "
+                         "({})".format(url, software, str(e)))
 
-    # extension
-    ext = split_ext(result.url)[1]
+    # is extension valid
+    ext = _split_ext(result.url)[1]
     valid_exts = get_suported_extensions()
     if ext not in valid_exts:
         raise ValueError("invalid extension {!r}, valid extensions are: "
@@ -463,20 +381,19 @@ def uninstall(software, version=None, dry_run=False):
 
 
 def setup():
-    """Ensures all default directories exist and default configs are copied."""
+    """Ensures all default directories exist and default config is copied."""
     # create directories
-    dir_configs = get_configs_location()
+    path_config = get_config_location()
     dir_download = get_download_location()
     dir_install = get_install_location()
 
-    for d in [dir_configs, dir_download, dir_install]:
+    for d in [dir_download, dir_install]:
         if not os.path.exists(d):
             print("creating {}".format(d))
             os.makedirs(d)
 
-    # copy configs
-    default_configs = glob.glob(os.path.join(sys.prefix, "configs", "*.json"))
-    for f in default_configs:
-        if not os.path.exists(os.path.join(dir_configs, os.path.basename(f))):
-            print("copying {} -> {}".format(f, dir_configs))
-            shutil.copy2(f, dir_configs)
+    # copy config
+    default_config = os.path.join(sys.prefix, "config", "software.json")
+    if not os.path.exists(path_config):
+        print("copying {} -> {}".format(default_config, path_config))
+        shutil.copy2(default_config, path_config)

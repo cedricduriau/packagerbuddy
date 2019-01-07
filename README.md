@@ -28,12 +28,12 @@ After successfully installing the repository, run the following command:
 
 `packagerbuddy setup`
 
-This will create all default directories and copy the default configurations that ship with the repository. (see [Configure](#Configure))
+This will create all default directories and copy the default configuration file that ships with the repository. (see [Configure](#Configure))
 
 ## Usage
 
 ### Install software
-The `install` command requires two arguments. The `software` argument which needs to match an existing config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop. If you wish to force an install 
+The `install` command requires two arguments. The `software` argument which needs to match an alias in the software config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop. If you wish to force an install 
 again, the `force` flag covers this feature.
 
 ```
@@ -44,10 +44,6 @@ packagerbuddy install -s foo -v 1.0.0 -f
 # long notation
 packagerbuddy install --software foo --version 1.0.0
 packagerbuddy install --software foo --version 1.0.0 --force
-
-# foo needs to match with a config named config_foo.json
-# 1.0.0 needs to form an existing url, formatted into the config url
-# see example in configure section of README for more details
 ```
 
 Installing consists of four steps:
@@ -64,13 +60,13 @@ packagerbuddy list
 ```
 
 ### List software available to install
-The `avail` command prints all software names that PackagerBuddy holds a config for.
+The `avail` command prints all software names that are present in the config, supported by PackgerBuddy.
 ```
 packagerbuddy avail
 ```
 
 ### Uninstalling
-The `uninstall` command well, does exactly that. It checks if the given software is installed at all and if so, proceeds to remove the file system contents in the designated install location.
+The `uninstall` command, well, does exactly that. It checks if the given software is installed at all and if so, proceeds to remove the file system contents in the designated install location.
 
 The `version` argument is optional. If it is passed, only given version will be removed. If it is not passed, **all** versions will be uninstalled of given software. Beware of this feature.
 
@@ -93,25 +89,26 @@ packagerbuddy uninstall --software foo --dry-run
 
 ### Environment Variables
 
-* `PB_CONFIGS` : Directory the software configs are located. 
-  * default: custom directory in the user home. (`~/.packagerbuddy/configs`)
+* `PB_CONFIG` : Path of the software config.
+  * default: custom file in the user home. (`~/.packagerbuddy/config/software.json`)
 * `PB_DOWNLOAD` : Directory the software will be downloaded to.
   * default: custom directory in the user home. (`~/.packagerbuddy/source`)
 * `PB_INSTALL`: Directory the software will be installed in.
   * default: custom directory in the user home. (`~/.packagerbuddy/installed`)
 
-### Configs
+### Config
 
-Software configuration files are small and easy to set up.
-They consist only one key, the download url template.
+Adding a software package to support is an easy task. This is done by adding an alias of the software as key and its download url template as value to the software configuration file.
 
 ```
-// example config_foo.json
+// example software.json
 {
-    "url": "https://software.com/{version}"
+    "software": "https://software.com/{version}",
+    "other-software": "https://other-software.com/{version}"
 }
+
 ```
 
-* `url`: Web address triggering the download of a release of the software, with the release version replaced by a {version} placeholder.
+All values need to be web addresses triggering the download of a release of the software, with the release version replaced by a {version} placeholder.
 
 TIPS-N-TRICKS: You can figure out the download url of a software by going the standard route, browse to the download page and when you found a link that triggers the automatic download, right click on that link and open it in a new page. You can then evaluate safely the address and figure out where to replace the release version with the {version} placeholder.

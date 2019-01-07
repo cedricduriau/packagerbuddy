@@ -1,7 +1,6 @@
 # stlib modules
 from __future__ import absolute_import
 import os
-import uuid
 
 # tool modules
 from packagerbuddy import packagerbuddy
@@ -35,15 +34,26 @@ def test_untar():
     pass
 
 
-def test_unpack():
-    pass
+def test_build_download_url():
+    """Test building a download url."""
+    packagerbuddy._build_download_url("http://valid.com/{version}", "1.0.0") == "http://valid.com/1.0.0"
 
 
-def test_get_configs_location(patch_PB_CONFIGS):
+def test_get_archive(patch_PB_DOWNLOAD):
+    download_dir = os.environ["PB_DOWNLOAD"]
+    assert packagerbuddy._get_archive("invalid", "1.0.0") is None
+    archive = packagerbuddy._get_archive("valid", "1.0.0")
+    assert archive == os.path.join(download_dir, "valid-1.0.0.tar.gz")
+
+
+def test_split_ext():
+    assert packagerbuddy._split_ext("/tmp/foo.tar") == ("/tmp/foo", ".tar")
+    assert packagerbuddy._split_ext("/tmp/foo.tar.gz") == ("/tmp/foo", ".tar.gz")
+
+
+def test_get_config_location(patch_PB_CONFIG):
     """Test getting the software configs location."""
-    current_dir = os.path.dirname(__file__)
-    expected = os.path.abspath(os.path.join(current_dir, "..", "test_configs"))
-    assert packagerbuddy.get_configs_location() == expected
+    assert packagerbuddy.get_config_location() == os.environ["PB_CONFIG"]
 
 
 def test_get_download_location(patch_PB_DOWNLOAD):
@@ -60,28 +70,10 @@ def test_get_install_location(patch_PB_INSTALL):
     assert packagerbuddy.get_install_location() == expected
 
 
-def test_build_config_name():
-    """Test buidling a software config name."""
-    assert packagerbuddy._build_config_name("test") == "config_test.json"
-
-
-def test_get_config_path(patch_PB_CONFIGS):
-    """Test getting the path of a software config."""
-    name = "config_valid.json"
-    current_dir = os.path.dirname(__file__)
-    expected = os.path.abspath(os.path.join(current_dir, "..", "test_configs", name))
-    assert packagerbuddy._get_config_path(name) == expected
-
-
-def test_get_config(patch_PB_CONFIGS):
+def test_get_config(patch_PB_CONFIG):
     """Test getting the config for a valid software."""
-    assert packagerbuddy.get_config("valid") == {"url": "http://valid.com/{version}", "extension": "tar"}
-
-
-def test_get_config_fail(patch_PB_CONFIGS):
-    """Test getting the config for an invalid software."""
-    with pytest.raises(ValueError):
-        packagerbuddy.get_config(uuid.uuid4())
+    config = {"valid": "http://valid.com/{version}.tar"}
+    assert packagerbuddy.get_config() == config
 
 
 def test_install():
@@ -102,55 +94,15 @@ def test_get_installed_software(patch_PB_INSTALL):
                                                       os.path.join(install_dir, "valid-2.0.0")]
 
 
-def test_get_configs(patch_PB_CONFIGS):
-    """Test getting the available software configs."""
-    assert packagerbuddy.get_configs() == [os.path.join(os.environ["PB_CONFIGS"], "config_valid.json")]
-
-
-def test_get_software_from_config():
-    """Test getting the name of a software from a software config."""
-    assert packagerbuddy.get_software_from_config("config_foo.json") == "foo"
-    assert packagerbuddy.get_software_from_config("~/config_foo-bar.json") == "foo-bar"
-    assert packagerbuddy.get_software_from_config("../config_fu.manchu.json") == "fu.manchu"
-
-
 def test_get_suported_extensions():
     """Test getting the supported software archive extensions."""
     assert packagerbuddy.get_suported_extensions() == set([".tar", ".tar.gz", ".tar.bz"])
 
 
-def test_validate_config_name():
-    """Test validating valid software config names."""
-    # path
-    packagerbuddy.validate_config_name("~/config_foo.json") == "foo"
-
-    # filename
-    packagerbuddy.validate_config_name("config_bar.json") == "bar"
-
-
-def test_validate_config_name_fail():
-    """Test validating invalid software config names."""
-    # path does not start with config_
-    with pytest.raises(ValueError):
-        packagerbuddy.validate_config_name("~/foo.json")
-
-    # path does not end with .json
-    with pytest.raises(ValueError):
-        packagerbuddy.validate_config_name("~/config_foo.yml")
-
-    # filename does not start with config_
-    with pytest.raises(ValueError):
-        packagerbuddy.validate_config_name("foo.json")
-
-    # filename does not end with .json
-    with pytest.raises(ValueError):
-        packagerbuddy.validate_config_name("config_foo.yml")
-
-
 def test_validate_config(patch_urllib2):
     """Test validating a valid software config."""
-    config = {"url": "http://valid.com/{version}.tar.gz"}
-    packagerbuddy.validate_config(config, "1.0.0")
+    config = {"valid": "http://valid.com/{version}.tar"}
+    packagerbuddy.validate_config(config, "valid", "1.0.0")
 
 
 def test_validate_config_fail(patch_urllib2):
@@ -159,44 +111,27 @@ def test_validate_config_fail(patch_urllib2):
 
     # missing key url
     with pytest.raises(KeyError):
-        packagerbuddy.validate_config({"foo": None}, version)
+        packagerbuddy.validate_config({"foo": None}, "valid", version)
 
     # no url value
-    config = {"url": None, "extension": None}
+    config = {"valid": None}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config(config, version)
+        packagerbuddy.validate_config(config, "valid", version)
 
     # url without version placeholder format
-    config = {"url": "http://invalid.com.tar.gz"}
+    config = {"invalid": "http://invalid.com.tar"}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config(config, version)
+        packagerbuddy.validate_config(config, "invalid", version)
 
     # invalid url
-    config = {"url": "http://invalid.com/{version}.tar.gz"}
+    config = {"valid": "http://invalid.com/{version}.tar"}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config(config, version)
+        packagerbuddy.validate_config(config, "valid", version)
 
     # invalid extension, unsupported
-    config = {"url": "http://valid.com/{version}.FOO"}
+    config = {"valid": "http://valid.com/{version}.FOO"}
     with pytest.raises(ValueError):
-        packagerbuddy.validate_config(config, version)
-
-
-def test_build_download_url():
-    """Test building a download url."""
-    packagerbuddy._build_download_url("http://valid.com/{version}", "1.0.0") == "http://valid.com/1.0.0"
-
-
-def test_get_archive(patch_PB_DOWNLOAD):
-    download_dir = os.environ["PB_DOWNLOAD"]
-    assert packagerbuddy._get_archive("invalid", "1.0.0") is None
-    archive = packagerbuddy._get_archive("valid", "1.0.0")
-    assert archive == os.path.join(download_dir, "valid-1.0.0.tar.gz")
-
-
-def test_split_ext():
-    assert packagerbuddy.split_ext("/tmp/foo.tar") == ("/tmp/foo", ".tar")
-    assert packagerbuddy.split_ext("/tmp/foo.tar.gz") == ("/tmp/foo", ".tar.gz")
+        packagerbuddy.validate_config(config, "valid", version)
 
 
 def test_uninstall():

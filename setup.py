@@ -3,19 +3,18 @@ import os
 from setuptools import setup
 
 
-def get_default_configs():
+def get_default_config():
     """
-    Gets the default configuration files that ship with the repository.
+    Gets the default configuration file that ship with the repository.
 
-    :rtype: list[str]
+    :rtype: str
     """
-    dirname = "configs"
-    dir_configs = os.path.join(os.path.dirname(__file__), dirname)
-    return [os.path.join(dirname, f) for f in os.listdir(dir_configs)]
+    path = os.path.join(os.path.dirname(__file__), "config", "software.json")
+    return os.path.abspath(path)
 
 
 setup(name="PackagerBuddy",
-      version="0.2.0",
+      version="1.0.0",
       description="JSON config based software packager.",
       license="MIT",
       author="C&eacute;dric Duriau",
@@ -23,4 +22,4 @@ setup(name="PackagerBuddy",
       url="https://github.com/cedricduriau/PackagerBuddy",
       packages=["packagerbuddy"],
       scripts=["bin/packagerbuddy"],
-      data_files=[("configs", get_default_configs())])
+      data_files=[("config", [get_default_config()])])
