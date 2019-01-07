@@ -12,9 +12,9 @@ ROOT_TESTS = os.path.dirname(__file__)
 
 
 @pytest.fixture
-def patch_PB_CONFIGS(monkeypatch):
-    """Monkey patches the PB_CONFIGS environment variable."""
-    os.environ["PB_CONFIGS"] = os.path.join(ROOT_TESTS, "test_configs")
+def patch_PB_CONFIG(monkeypatch):
+    """Monkey patches the PB_CONFIG environment variable."""
+    os.environ["PB_CONFIG"] = os.path.join(ROOT_TESTS, "test_config", "software.json")
 
 
 @pytest.fixture
