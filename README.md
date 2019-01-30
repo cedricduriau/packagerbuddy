@@ -5,7 +5,7 @@
 
 ## Overview
 
-PackagerBuddy is a JSON config based software packager written entirely in Python.
+PackagerBuddy is a JSON config based software packager written entirely in Python for Linux.
 
 Use Cases
 
