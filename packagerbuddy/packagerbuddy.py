@@ -138,16 +138,24 @@ def _split_ext(path):
     :return: path excluding extension and extension
     :rtype: str, str
     """
-    if len(path.split(".")) > 2 and not path.endswith(".tar"):
-        path, ext = path.split(".")[0], "." + ".".join(path.split(".")[-2:])
-    else:
-        path, ext = os.path.splitext(path)
-
     # dump extra header data
-    if "&" in ext:
-        ext = ext.split("&")[0]
+    if "&" in path:
+        path = path.split("&")[0]
 
-    return path, ext
+    # assume non .tar extensions do not have any suffix/compression
+    if ".tar" not in path:
+        path_noext, ext = os.path.splitext(path)
+    else:
+        for i in {".tar.gz", ".tar.bz2", ".tar"}:
+            if path.endswith(i):
+                path_noext, ext = path.rstrip(i), i
+                break
+
+    if not ext:
+        msg = "could not retrieve extension from path: {}"
+        raise ValueError(msg.format(path))
+
+    return path_noext, ext
 
 
 # ============================================================================
@@ -346,7 +354,11 @@ def validate_config(config, software, version):
                          "({})".format(url, software, str(e)))
 
     # is extension valid
-    ext = _split_ext(result.url)[1]
+    try:
+        _path, ext = _split_ext(url)
+    except ValueError:
+        _path, ext = _split_ext(result.url)
+
     validate_extension(ext)
 
 
@@ -374,7 +386,8 @@ def uninstall(software, version=None, dry_run=False):
     paths_by_name = {os.path.basename(p): p for p in installed}
 
     # group names by version for easy lookup
-    name_by_version = {n.split("-")[-1]: n for n in paths_by_name if n.startswith(software)}
+    name_by_version = {n.split("-")[-1]: n for n in paths_by_name
+                       if n.startswith(software)}
 
     # get how many versions of software to uninstall
     to_uninstall = name_by_version.keys()

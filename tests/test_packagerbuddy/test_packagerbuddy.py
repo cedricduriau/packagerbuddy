@@ -50,6 +50,8 @@ def test_split_ext():
     assert packagerbuddy._split_ext("/tmp/foo.tar") == ("/tmp/foo", ".tar")
     assert packagerbuddy._split_ext("/tmp/foo.tar.gz") == ("/tmp/foo", ".tar.gz")
     assert packagerbuddy._split_ext("/tmp/foo.tar.gz&response-content-type=application") == ("/tmp/foo", ".tar.gz")
+    assert packagerbuddy._split_ext("/tmp/foo/1.2.3.tar") == ("/tmp/foo/1.2.3", ".tar")
+    assert packagerbuddy._split_ext("/tmp/foo/1.2.3.tar.gz") == ("/tmp/foo/1.2.3", ".tar.gz")
 
 
 def test_get_config_location(patch_PB_CONFIG):
