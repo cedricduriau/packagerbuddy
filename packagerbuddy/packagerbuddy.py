@@ -440,10 +440,10 @@ def setup():
         shutil.copy2(default_config, path_config)
 
     # copy scripts
-    default_scripts = os.path.join(sys.prefix, "config")
+    default_scripts = os.path.join(sys.prefix, "scripts")
     scripts = os.listdir(default_scripts)
     for script in scripts:
-        dst_script = os.path.join(dir_scripts)
+        dst_script = os.path.join(dir_scripts, script)
         if not os.path.exists(dst_script):
             src_script = os.path.join(default_scripts, script)
             print("copying {} -> {}".format(src_script, dst_script))
