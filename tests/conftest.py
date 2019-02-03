@@ -30,6 +30,12 @@ def patch_PB_INSTALL(monkeypatch):
 
 
 @pytest.fixture
+def patch_PB_SCRIPTS(monkeypatch):
+    """Monkey patches the PB_SCRIPTS environment variable."""
+    os.environ["PB_SCRIPTS"] = os.path.join(ROOT_TESTS, "test_scripts")
+
+
+@pytest.fixture
 def patch_urllib2(monkeypatch):
     """Monkey patches the urllib2 module to return custom requests."""
     my_opener = urllib2.build_opener(MockHTTPHandler)
