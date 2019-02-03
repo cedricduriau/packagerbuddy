@@ -138,12 +138,17 @@ def _split_ext(path):
     :return: path excluding extension and extension
     :rtype: str, str
     """
+    # dump extra header data
+    if "&" in path:
+        path = path.split("&")[0]
 
-    # assume non .tar extensions do not have any suffix
+    print(path)
+
+    # assume non .tar extensions do not have any suffix/compression
     if ".tar" not in path:
         path_noext, ext = os.path.splitext(path)
     else:
-        for i in {".tar.gz", ".tar.bz2"}:
+        for i in {".tar.gz", ".tar.bz2", ".tar"}:
             if path.endswith(i):
                 path_noext, ext = path.rstrip(i), i
                 break
@@ -151,10 +156,6 @@ def _split_ext(path):
     if not ext:
         msg = "could not retrieve extension from path: {}"
         raise ValueError(msg.format(path))
-
-    # dump extra header data
-    if "&" in ext:
-        ext = ext.split("&")[0]
 
     return path_noext, ext
 
