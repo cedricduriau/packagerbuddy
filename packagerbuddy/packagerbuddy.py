@@ -142,8 +142,6 @@ def _split_ext(path):
     if "&" in path:
         path = path.split("&")[0]
 
-    print(path)
-
     # assume non .tar extensions do not have any suffix/compression
     if ".tar" not in path:
         path_noext, ext = os.path.splitext(path)
