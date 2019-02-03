@@ -73,6 +73,13 @@ def test_get_install_location(patch_PB_INSTALL):
     assert packagerbuddy.get_install_location() == expected
 
 
+def test_get_scripts_location(patch_PB_SCRIPTS):
+    """Test getting the post install scripts location."""
+    current_dir = os.path.dirname(__file__)
+    expected = os.path.abspath(os.path.join(current_dir, "..", "test_scripts"))
+    assert packagerbuddy.get_scripts_location() == expected
+
+
 def test_get_config(patch_PB_CONFIG):
     """Test getting the config for a valid software."""
     config = {"valid": "http://valid.com/{version}.tar"}
