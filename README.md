@@ -24,7 +24,7 @@ If you wish to install the current master, use the following command:
 
 Or a specific release version:
 
-`pip install git+git://github.com/cedricduriau/PackagerBuddy.git@v1.0.1`
+`pip install git+git://github.com/cedricduriau/PackagerBuddy.git@1.0.1`
 
 After successfully installing the repository, run the following command:
 
