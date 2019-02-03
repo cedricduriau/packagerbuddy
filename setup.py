@@ -14,7 +14,7 @@ def get_default_config():
 
 
 setup(name="PackagerBuddy",
-      version="1.0.0",
+      version="1.0.1",
       description="JSON config based software packager.",
       license="MIT",
       author="C&eacute;dric Duriau",
