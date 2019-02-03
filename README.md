@@ -71,12 +71,13 @@ packagerbuddy install --software foo --version 1.0.0
 packagerbuddy install --software foo --version 1.0.0 --force
 ```
 
-Installing consists of four steps:
+Installing consists of five steps:
 
 1. Download the software from the url in the configs to the designated download directory.
 2. Unpack the downloaded content.
 3. Install/move the unpacked content to the designated install directory.
 4. Create a package file inside the installed directory.
+5. Run the post install script from the designated scripts directory.
 
 ### List installed software
 The `list` command prints all installed software. PackagerBuddy knows the difference between ordinary directories and software it installed thanks to a package file which is written out at install time.
@@ -120,3 +121,5 @@ packagerbuddy uninstall --software foo --dry-run
   * default: custom directory in the user home. (`~/.packagerbuddy/source`)
 * `PB_INSTALL`: Directory the software will be installed in.
   * default: custom directory in the user home. (`~/.packagerbuddy/installed`)
+* `PB_SCRIPTS`: Directory of the post install scripts.
+  * default: custom directory in the user home. (`~/.packagerbuddy/scripts`)
