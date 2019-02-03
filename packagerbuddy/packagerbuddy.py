@@ -7,6 +7,7 @@ import glob
 import shutil
 import urllib2
 import tarfile
+import subprocess
 
 
 # ============================================================================
@@ -192,6 +193,16 @@ def get_install_location():
     return _normalize_path(dir_install)
 
 
+def get_scripts_location():
+    """
+    Returns the location of the post install scripts.
+
+    :rtype: str
+    """
+    dir_scripts = os.getenv("PB_SCRIPTS", "~/.packagerbuddy/scripts/")
+    return _normalize_path(dir_scripts)
+
+
 def get_config():
     """
     Returns the software config.
@@ -274,6 +285,11 @@ def install(software, version, force=False):
     cache_file = os.path.join(install_path, ".pbsoftware")
     if not os.path.exists(cache_file):
         open(cache_file, "w+").close()
+
+    # run post install script
+    script = get_script(software)
+    if script:
+        run_script(script, software, version)
 
 
 def is_software_installed(software, version):
@@ -409,8 +425,9 @@ def setup():
     path_config = get_config_location()
     dir_download = get_download_location()
     dir_install = get_install_location()
+    dir_scripts = get_scripts_location()
 
-    for d in [dir_download, dir_install]:
+    for d in [dir_download, dir_install, dir_scripts]:
         if not os.path.exists(d):
             print("creating {}".format(d))
             os.makedirs(d)
@@ -514,3 +531,30 @@ def validate_extension(extension):
     if extension not in valid_exts:
         msg = "invalid extension {!r}, valid extensions are: {}"
         raise ValueError(msg.format(extension, ", ".join(valid_exts)))
+
+
+def get_script(software):
+    """
+    Gets the path of the post install script of a software.
+
+    :rtype: str
+    """
+    dir_scripts = get_scripts_location()
+    scripts = os.listdir(dir_scripts)
+
+    for script in scripts:
+        if script == software:
+            return os.path.join(dir_scripts, script)
+
+    return None
+
+
+def run_script(script, software, version):
+    cmd = [script, software, version]
+    process = subprocess.Popen(cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               shell=True)
+    print("running post install script ...")
+    stdout, stderr = process.communicate()
+    print("\n".join([stdout, stderr]))
