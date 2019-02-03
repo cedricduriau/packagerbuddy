@@ -439,6 +439,16 @@ def setup():
         print("copying {} -> {}".format(default_config, path_config))
         shutil.copy2(default_config, path_config)
 
+    # copy scripts
+    default_scripts = os.path.join(sys.prefix, "config")
+    scripts = os.listdir(default_scripts)
+    for script in scripts:
+        dst_script = os.path.join(dir_scripts)
+        if not os.path.exists(dst_script):
+            src_script = os.path.join(default_scripts, script)
+            print("copying {} -> {}".format(src_script, dst_script))
+            shutil.copy2(src_script, dst_script)
+
 
 def validate_template_url(url):
     """
