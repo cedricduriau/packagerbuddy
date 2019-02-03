@@ -248,10 +248,10 @@ def install(software, version, force=False):
 
         # rename
         try:
-            extension = _split_ext(url)[1]
-            validate_extension(extension)
+            _, extension = _split_ext(url)
         except ValueError:
-            extension = _split_ext(source)[1]
+            _, extension = _split_ext(source)
+        validate_extension(extension)
 
         archive_name = _build_archive_name(software, version, extension)
         archive_path = os.path.join(download_dir, archive_name)
@@ -289,7 +289,7 @@ def install(software, version, force=False):
     # run post install script
     script = get_script(software)
     if script:
-        run_script(script, software, version)
+        run_script(script, software, version, wd=install_path)
 
 
 def is_software_installed(software, version):
@@ -549,12 +549,31 @@ def get_script(software):
     return None
 
 
-def run_script(script, software, version):
+def run_script(script, software, version, wd=None):
+    """
+    Run a post install script for a specific software.
+
+    :param script: post install script
+    :type script: str
+
+    :param software: software to run post install script for
+    :type software: str
+
+    :param version: version of the software to run post install script for
+    :type version: str
+
+    :param wd: working directory path to run the script from
+    :type wd: str
+    """
     cmd = [script, software, version]
-    process = subprocess.Popen(cmd,
+    process = subprocess.Popen(" ".join(cmd),
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
-                               shell=True)
+                               shell=True,
+                               cwd=wd)
     print("running post install script ...")
     stdout, stderr = process.communicate()
-    print("\n".join([stdout, stderr]))
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr)
