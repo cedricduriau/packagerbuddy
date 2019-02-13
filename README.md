@@ -4,6 +4,9 @@
 [![codecov](https://codecov.io/gh/cedricduriau/packagerbuddy/branch/master/graph/badge.svg)](https://codecov.io/gh/cedricduriau/packagerbuddy)
 [![platform](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
 [![python](https://img.shields.io/badge/python-2-blue.svg)](https://img.shields.io/badge/python-2-blue.svg)
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](https://img.shields.io/badge/python-2-blue.svg)
+
+
 
 ## Overview
 
