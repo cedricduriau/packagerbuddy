@@ -1,42 +1,48 @@
 # stdlib
 import os
-import urllib2
+
+try:
+    from urllib.request import build_opener, install_opener
+except ImportError:
+    from urllib2 import build_opener, install_opener
 
 # tool modules
-from tests.mock_urllib2 import MockHTTPHandler
+from tests.mock_urllib import MockHTTPHandler
 
 # third party modules
 import pytest
-
-ROOT_TESTS = os.path.dirname(__file__)
 
 
 @pytest.fixture
 def patch_PB_CONFIG(monkeypatch):
     """Monkey patches the PB_CONFIG environment variable."""
-    os.environ["PB_CONFIG"] = os.path.join(ROOT_TESTS, "test_config", "software.json")
+    directory = os.path.dirname(__file__)
+    os.environ["PB_CONFIG"] = os.path.join(directory, "test_config", "software.json")
 
 
 @pytest.fixture
 def patch_PB_DOWNLOAD(monkeypatch):
     """Monkey patches the PB_DOWNLOAD environment variable."""
-    os.environ["PB_DOWNLOAD"] = os.path.join(ROOT_TESTS, "test_source")
+    directory = os.path.dirname(__file__)
+    os.environ["PB_DOWNLOAD"] = os.path.join(directory, "test_source")
 
 
 @pytest.fixture
 def patch_PB_INSTALL(monkeypatch):
     """Monkey patches the PB_INSTALL environment variable."""
-    os.environ["PB_INSTALL"] = os.path.join(ROOT_TESTS, "test_install")
+    directory = os.path.dirname(__file__)
+    os.environ["PB_INSTALL"] = os.path.join(directory, "test_install")
 
 
 @pytest.fixture
 def patch_PB_SCRIPTS(monkeypatch):
     """Monkey patches the PB_SCRIPTS environment variable."""
-    os.environ["PB_SCRIPTS"] = os.path.join(ROOT_TESTS, "test_scripts")
+    directory = os.path.dirname(__file__)
+    os.environ["PB_SCRIPTS"] = os.path.join(directory, "test_scripts")
 
 
 @pytest.fixture
 def patch_urllib2(monkeypatch):
     """Monkey patches the urllib2 module to return custom requests."""
-    my_opener = urllib2.build_opener(MockHTTPHandler)
-    urllib2.install_opener(my_opener)
+    my_opener = build_opener(MockHTTPHandler)
+    install_opener(my_opener)
