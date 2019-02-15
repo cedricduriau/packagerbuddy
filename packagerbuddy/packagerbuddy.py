@@ -1,13 +1,16 @@
 # stdlib modules
 from __future__ import absolute_import
 import os
-import sys
 import json
 import glob
 import shutil
-import urllib2
 import tarfile
 import subprocess
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 
 # ============================================================================
@@ -38,7 +41,7 @@ def _download(url, directory):
     :return: full path of downloaded archive
     :rtype: str
     """
-    request = urllib2.urlopen(url)
+    request = urlopen(url)
     try:
         headers = request.headers
         archive_name = headers["content-disposition"].split("filename=")[1]
@@ -364,7 +367,7 @@ def validate_config(config, software, version):
     # is url valid
     url = _build_download_url(url, version)
     try:
-        result = urllib2.urlopen(url)
+        result = urlopen(url)
     except Exception as e:
         raise ValueError("invalid url {!r} for software {!r} "
                          "({})".format(url, software, str(e)))
@@ -417,37 +420,6 @@ def uninstall(software, version=None, dry_run=False):
         print("uninstalling {} ...".format(name))
         if not dry_run:
             shutil.rmtree(path)
-
-
-def setup():
-    """Ensures all default directories exist and default config is copied."""
-    # create directories
-    path_config = get_config_location()
-    dir_download = get_download_location()
-    dir_install = get_install_location()
-    dir_scripts = get_scripts_location()
-
-    for d in [dir_download, dir_install, dir_scripts]:
-        if not os.path.exists(d):
-            print("creating {}".format(d))
-            os.makedirs(d)
-
-    # copy config
-    default_config = os.path.join(sys.prefix, "config", "software.json")
-    if not os.path.exists(path_config):
-        os.makedirs(os.path.dirname(path_config))
-        print("copying {} -> {}".format(default_config, path_config))
-        shutil.copy2(default_config, path_config)
-
-    # copy scripts
-    default_scripts = os.path.join(sys.prefix, "scripts")
-    scripts = os.listdir(default_scripts)
-    for script in scripts:
-        dst_script = os.path.join(dir_scripts, script)
-        if not os.path.exists(dst_script):
-            src_script = os.path.join(default_scripts, script)
-            print("copying {} -> {}".format(src_script, dst_script))
-            shutil.copy2(src_script, dst_script)
 
 
 def validate_template_url(url):
