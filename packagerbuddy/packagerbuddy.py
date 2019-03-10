@@ -28,6 +28,23 @@ def _normalize_path(path):
     return os.path.abspath(os.path.expanduser(path))
 
 
+def _get_filename_from_request(request):
+    """
+    Gets the filename from an url request.
+
+    :param request: url request to get filename from
+    :type request: urllib.requests.Request or urllib2.Request
+
+    :rtype: str
+    """
+    try:
+        headers = request.headers
+        content = headers["content-disposition"]
+        return content.split("filename=")[1]
+    except KeyError:
+        return os.path.basename(request.url)
+
+
 def _download(url, directory):
     """
     Downloads the content of an URL to a location.
@@ -41,14 +58,14 @@ def _download(url, directory):
     :return: full path of downloaded archive
     :rtype: str
     """
+    # get request from url
     request = urlopen(url)
-    try:
-        headers = request.headers
-        archive_name = headers["content-disposition"].split("filename=")[1]
-    except KeyError:
-        archive_name = os.path.basename(request.url)
 
+    # get path to download
+    archive_name = _get_filename_from_request(request)
     archive_path = os.path.join(directory, archive_name)
+
+    # download
     with open(archive_path, "wb+") as fp:
         fp.write(request.read())
 
@@ -73,6 +90,27 @@ def _build_archive_name(software, version, extension):
     return "{}-{}.{}".format(software, version, extension)
 
 
+def _get_tar_read_mode(tar_file):
+    """
+    Get read mode for tar file.
+
+    :param tar_file: path of tar file to get read mode for
+    :type tar_file: str
+
+    :rtype: str
+    """
+    # default non-compressed tar
+    read_mode = "r"
+
+    # add suffix based on compression extension
+    if tar_file.endswith("tar.gz"):
+        read_mode += ":gz"
+    elif tar_file.endswith("tar.bz2"):
+        read_mode += ":bz2"
+
+    return read_mode
+
+
 def _untar(archive):
     """
     Unpacks a tarfile.
@@ -85,16 +123,16 @@ def _untar(archive):
     :return: the path of the extracted content
     :rtype: str
     """
-    # https://docs.python.org/2.7/library/tarfile.html#tarfile.open
-    read_mode = "r"
-    if archive.endswith("tar.gz"):
-        read_mode += ":gz"
-    elif archive.endswith("tar.bz2"):
-        read_mode += ":bz2"
+    # get tar read mode
+    read_mode = _get_tar_read_mode(archive)
 
+    # https://docs.python.org/2.7/library/tarfile.html#tarfile.open
     directory = os.path.dirname(archive)
     with tarfile.open(archive, read_mode) as tar:
+        # extract
         tar.extractall(path=directory)
+
+        # assume archive contains single directory to build full path from
         return os.path.join(directory, tar.getnames()[0])
 
 
