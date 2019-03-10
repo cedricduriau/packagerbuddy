@@ -41,7 +41,7 @@ def _get_filename_from_request(request):
         headers = request.headers
         content = headers["content-disposition"]
         return content.split("filename=")[1]
-    except KeyError:
+    except (KeyError, AttributeError):
         return os.path.basename(request.url)
 
 
@@ -87,7 +87,7 @@ def _build_archive_name(software, version, extension):
 
     :rtype: str
     """
-    return "{}-{}.{}".format(software, version, extension)
+    return "{}-{}{}".format(software, version, extension)
 
 
 def _get_tar_read_mode(tar_file):
