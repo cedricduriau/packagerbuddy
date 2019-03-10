@@ -19,13 +19,6 @@ def _build_parser():
     subparsers = parser.add_subparsers()
 
     # ========================================================================
-    # setup
-    # ========================================================================
-    help = "sets up the default directories"
-    parser_setup = subparsers.add_parser("setup", help=help)
-    parser_setup.set_defaults(which="setup")
-
-    # ========================================================================
     # add
     # ========================================================================
     help = "add a software configuration"
@@ -150,8 +143,6 @@ if __name__ == "__main__":
         packagerbuddy.uninstall(namespace.software,
                                 version=namespace.version,
                                 dry_run=namespace.dry_run)
-    elif action == "setup":
-        packagerbuddy.setup()
     elif action == "add":
         packagerbuddy.add_software(namespace.software, namespace.url)
     elif action == "remove":
