@@ -21,11 +21,11 @@ of itself.
 
 If you wish to install the current master, use the following command:
 
-`pip install git+git://github.com/cedricduriau/PackagerBuddy.git`
+`pip install git+git://github.com/cedricduriau/packagerbuddy.git`
 
 Or a specific release version:
 
-`pip install git+git://github.com/cedricduriau/PackagerBuddy.git@1.0.1`
+`pip install git+git://github.com/cedricduriau/packagerbuddy.git@1.1.0`
 
 
 This will create all default directories and copy the default configuration file that ships with the repository. (see [Configure](#Configure))
