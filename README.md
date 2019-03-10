@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/cedricduriau/packagerbuddy.svg?branch=master)](https://travis-ci.org/cedricduriau/packagerbuddy)
 [![codecov](https://codecov.io/gh/cedricduriau/packagerbuddy/branch/master/graph/badge.svg)](https://codecov.io/gh/cedricduriau/packagerbuddy)
 [![platform](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
-[![python](https://img.shields.io/badge/python-2-blue.svg)](https://img.shields.io/badge/python-2-blue.svg)
+[![python](https://img.shields.io/badge/python-2.7%20|%203.6-blue.svg)](https://img.shields.io/badge/python-2.7%20|%203.6-blue.svg)
 
 ## Overview
 
@@ -26,9 +26,6 @@ Or a specific release version:
 
 `pip install git+git://github.com/cedricduriau/PackagerBuddy.git@1.0.1`
 
-After successfully installing the repository, run the following command:
-
-`packagerbuddy setup`
 
 This will create all default directories and copy the default configuration file that ships with the repository. (see [Configure](#Configure))
 
@@ -123,3 +120,15 @@ packagerbuddy uninstall --software foo --dry-run
   * default: custom directory in the user home. (`~/.packagerbuddy/installed`)
 * `PB_SCRIPTS`: Directory of the post install scripts.
   * default: custom directory in the user home. (`~/.packagerbuddy/scripts`)
+
+
+### Examples
+
+If you want to try out the example setup shipping with the repository, follow these steps.
+
+* Copy the `examples/config/software.json` to the `PB_CONFIG` or default location.
+* Copy the `examples/scripts/vscode` to the `PB_SCRIPTS` or default location.
+
+This will allow you to install three software packages. One of them is `vscode` (Visual Studio Code), which has a post install script.
+Check out the `vscode` post install script for its inner working.
+Check out the [vscode release notes](https://code.visualstudio.com/updates) for a valid version number to install.
