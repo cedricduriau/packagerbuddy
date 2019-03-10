@@ -45,7 +45,7 @@ def test_download():
 
 def test_build_archive_name():
     """Test building the archive name of a specific software release."""
-    assert packagerbuddy._build_archive_name("software", "version", "ext") == "software-version.ext"
+    assert packagerbuddy._build_archive_name("software", "version", ".ext") == "software-version.ext"
 
 
 def test_get_tar_read_mode():
