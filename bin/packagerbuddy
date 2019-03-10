@@ -134,10 +134,14 @@ if __name__ == "__main__":
         print(msg)
     elif action == "avail":
         msg = "No software configs available."
-        config = packagerbuddy.get_config()
-        names = sorted(config.keys())
-        if names:
+
+        try:
+            config = packagerbuddy.get_config()
+            names = sorted(config.keys())
             msg = "\n".join(["- " + k for k in names])
+        except Exception:
+            pass
+
         print(msg)
     elif action == "uninstall":
         packagerbuddy.uninstall(namespace.software,
