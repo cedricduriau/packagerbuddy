@@ -2,11 +2,29 @@
 from __future__ import absolute_import
 import os
 
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
+
 # tool modules
 from packagerbuddy import packagerbuddy
 
 # third party modules
 import pytest
+
+
+def test_get_filename_from_request(patch_url_handler):
+    """Test getting the filename of an url from a request object."""
+    # url with no filename in name, but in request content headers
+    request = urlopen("http://valid.com")
+    filename = packagerbuddy._get_filename_from_request(request)
+    assert filename == "valid.tar"
+
+    # url with filename in name, not in request content headers
+    request = urlopen("http://filename.tar")
+    filename = packagerbuddy._get_filename_from_request(request)
+    assert filename == "filename.tar"
 
 
 def test_normalize_path():
@@ -27,7 +45,14 @@ def test_download():
 
 def test_build_archive_name():
     """Test building the archive name of a specific software release."""
-    assert packagerbuddy._build_archive_name("software", "version", "ext") == "software-version.ext"
+    assert packagerbuddy._build_archive_name("software", "version", ".ext") == "software-version.ext"
+
+
+def test_get_tar_read_mode():
+    """Test getting the tar file read modes."""
+    assert packagerbuddy._get_tar_read_mode("/tmp/test.tar") == "r"
+    assert packagerbuddy._get_tar_read_mode("/tmp/test.tar.gz") == "r:gz"
+    assert packagerbuddy._get_tar_read_mode("/tmp/test.tar.bz2") == "r:bz2"
 
 
 def test_untar():
@@ -47,11 +72,19 @@ def test_get_archive(patch_PB_DOWNLOAD):
 
 
 def test_split_ext():
+    """Test splitting the extension of paths with supported extensions."""
     assert packagerbuddy._split_ext("/tmp/foo.tar") == ("/tmp/foo", ".tar")
     assert packagerbuddy._split_ext("/tmp/foo.tar.gz") == ("/tmp/foo", ".tar.gz")
     assert packagerbuddy._split_ext("/tmp/foo.tar.gz&response-content-type=application") == ("/tmp/foo", ".tar.gz")
     assert packagerbuddy._split_ext("/tmp/foo/1.2.3.tar") == ("/tmp/foo/1.2.3", ".tar")
     assert packagerbuddy._split_ext("/tmp/foo/1.2.3.tar.gz") == ("/tmp/foo/1.2.3", ".tar.gz")
+
+
+def test_split_ext_fail():
+    """Test splitting the extension of paths with unsupported extensions."""
+    # no extension
+    with pytest.raises(ValueError):
+        packagerbuddy._split_ext("/tmp/foo/test")
 
 
 def test_get_config_location(patch_PB_CONFIG):
@@ -71,6 +104,13 @@ def test_get_install_location(patch_PB_INSTALL):
     current_dir = os.path.dirname(__file__)
     expected = os.path.abspath(os.path.join(current_dir, "..", "test_install"))
     assert packagerbuddy.get_install_location() == expected
+
+
+def test_get_scripts_location(patch_PB_SCRIPTS):
+    """Test getting the post install scripts location."""
+    current_dir = os.path.dirname(__file__)
+    expected = os.path.abspath(os.path.join(current_dir, "..", "test_scripts"))
+    assert packagerbuddy.get_scripts_location() == expected
 
 
 def test_get_config(patch_PB_CONFIG):
@@ -102,13 +142,13 @@ def test_get_suported_extensions():
     assert packagerbuddy.get_suported_extensions() == set([".tar", ".tar.gz", ".tar.bz"])
 
 
-def test_validate_config(patch_urllib2):
+def test_validate_config(patch_url_handler):
     """Test validating a valid software config."""
     config = {"valid": "http://valid.com/{version}.tar"}
     packagerbuddy.validate_config(config, "valid", "1.0.0")
 
 
-def test_validate_config_fail(patch_urllib2):
+def test_validate_config_fail(patch_url_handler):
     """Test validating invalid software configs."""
     version = "1.0.0"
 
@@ -210,3 +250,10 @@ def test_validate_extension_fail():
 
     with pytest.raises(ValueError):
         packagerbuddy.validate_extension(".foo")
+
+
+def test_get_script(patch_PB_SCRIPTS):
+    """Test getting the post install scripts of software packages."""
+    assert packagerbuddy.get_script("invalid") is None
+    scripts_dir = os.environ["PB_SCRIPTS"]
+    assert packagerbuddy.get_script("valid") == os.path.join(scripts_dir, "valid")

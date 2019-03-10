@@ -1,12 +1,16 @@
 # stdlib modules
 from __future__ import absolute_import
 import os
-import sys
 import json
 import glob
 import shutil
-import urllib2
 import tarfile
+import subprocess
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 
 # ============================================================================
@@ -24,6 +28,23 @@ def _normalize_path(path):
     return os.path.abspath(os.path.expanduser(path))
 
 
+def _get_filename_from_request(request):
+    """
+    Gets the filename from an url request.
+
+    :param request: url request to get filename from
+    :type request: urllib.requests.Request or urllib2.Request
+
+    :rtype: str
+    """
+    try:
+        headers = request.headers
+        content = headers["content-disposition"]
+        return content.split("filename=")[1]
+    except (KeyError, AttributeError):
+        return os.path.basename(request.url)
+
+
 def _download(url, directory):
     """
     Downloads the content of an URL to a location.
@@ -37,14 +58,14 @@ def _download(url, directory):
     :return: full path of downloaded archive
     :rtype: str
     """
-    request = urllib2.urlopen(url)
-    try:
-        headers = request.headers
-        archive_name = headers["content-disposition"].split("filename=")[1]
-    except KeyError:
-        archive_name = os.path.basename(request.url)
+    # get request from url
+    request = urlopen(url)
 
+    # get path to download
+    archive_name = _get_filename_from_request(request)
     archive_path = os.path.join(directory, archive_name)
+
+    # download
     with open(archive_path, "wb+") as fp:
         fp.write(request.read())
 
@@ -66,7 +87,28 @@ def _build_archive_name(software, version, extension):
 
     :rtype: str
     """
-    return "{}-{}.{}".format(software, version, extension)
+    return "{}-{}{}".format(software, version, extension)
+
+
+def _get_tar_read_mode(tar_file):
+    """
+    Get read mode for tar file.
+
+    :param tar_file: path of tar file to get read mode for
+    :type tar_file: str
+
+    :rtype: str
+    """
+    # default non-compressed tar
+    read_mode = "r"
+
+    # add suffix based on compression extension
+    if tar_file.endswith("tar.gz"):
+        read_mode += ":gz"
+    elif tar_file.endswith("tar.bz2"):
+        read_mode += ":bz2"
+
+    return read_mode
 
 
 def _untar(archive):
@@ -81,16 +123,16 @@ def _untar(archive):
     :return: the path of the extracted content
     :rtype: str
     """
-    # https://docs.python.org/2.7/library/tarfile.html#tarfile.open
-    read_mode = "r"
-    if archive.endswith("tar.gz"):
-        read_mode += ":gz"
-    elif archive.endswith("tar.bz2"):
-        read_mode += ":bz2"
+    # get tar read mode
+    read_mode = _get_tar_read_mode(archive)
 
+    # https://docs.python.org/2.7/library/tarfile.html#tarfile.open
     directory = os.path.dirname(archive)
     with tarfile.open(archive, read_mode) as tar:
+        # extract
         tar.extractall(path=directory)
+
+        # assume archive contains single directory to build full path from
         return os.path.join(directory, tar.getnames()[0])
 
 
@@ -192,6 +234,16 @@ def get_install_location():
     return _normalize_path(dir_install)
 
 
+def get_scripts_location():
+    """
+    Returns the location of the post install scripts.
+
+    :rtype: str
+    """
+    dir_scripts = os.getenv("PB_SCRIPTS", "~/.packagerbuddy/scripts/")
+    return _normalize_path(dir_scripts)
+
+
 def get_config():
     """
     Returns the software config.
@@ -237,10 +289,10 @@ def install(software, version, force=False):
 
         # rename
         try:
-            extension = _split_ext(url)[1]
-            validate_extension(extension)
+            _, extension = _split_ext(url)
         except ValueError:
-            extension = _split_ext(source)[1]
+            _, extension = _split_ext(source)
+        validate_extension(extension)
 
         archive_name = _build_archive_name(software, version, extension)
         archive_path = os.path.join(download_dir, archive_name)
@@ -272,8 +324,12 @@ def install(software, version, force=False):
 
     # create .pbsoftware file
     cache_file = os.path.join(install_path, ".pbsoftware")
-    if not os.path.exists(cache_file):
-        open(cache_file, "w+").close()
+    open(cache_file, "w+").close()
+
+    # run post install script
+    script = get_script(software)
+    if script:
+        run_script(script, software, version, wd=install_path)
 
 
 def is_software_installed(software, version):
@@ -348,7 +404,7 @@ def validate_config(config, software, version):
     # is url valid
     url = _build_download_url(url, version)
     try:
-        result = urllib2.urlopen(url)
+        result = urlopen(url)
     except Exception as e:
         raise ValueError("invalid url {!r} for software {!r} "
                          "({})".format(url, software, str(e)))
@@ -401,26 +457,6 @@ def uninstall(software, version=None, dry_run=False):
         print("uninstalling {} ...".format(name))
         if not dry_run:
             shutil.rmtree(path)
-
-
-def setup():
-    """Ensures all default directories exist and default config is copied."""
-    # create directories
-    path_config = get_config_location()
-    dir_download = get_download_location()
-    dir_install = get_install_location()
-
-    for d in [dir_download, dir_install]:
-        if not os.path.exists(d):
-            print("creating {}".format(d))
-            os.makedirs(d)
-
-    # copy config
-    default_config = os.path.join(sys.prefix, "config", "software.json")
-    if not os.path.exists(path_config):
-        os.makedirs(os.path.dirname(path_config))
-        print("copying {} -> {}".format(default_config, path_config))
-        shutil.copy2(default_config, path_config)
 
 
 def validate_template_url(url):
@@ -514,3 +550,49 @@ def validate_extension(extension):
     if extension not in valid_exts:
         msg = "invalid extension {!r}, valid extensions are: {}"
         raise ValueError(msg.format(extension, ", ".join(valid_exts)))
+
+
+def get_script(software):
+    """
+    Gets the path of the post install script of a software.
+
+    :rtype: str
+    """
+    dir_scripts = get_scripts_location()
+    scripts = os.listdir(dir_scripts)
+
+    for script in scripts:
+        if script == software:
+            return os.path.join(dir_scripts, script)
+
+    return None
+
+
+def run_script(script, software, version, wd=None):
+    """
+    Run a post install script for a specific software.
+
+    :param script: post install script
+    :type script: str
+
+    :param software: software to run post install script for
+    :type software: str
+
+    :param version: version of the software to run post install script for
+    :type version: str
+
+    :param wd: working directory path to run the script from
+    :type wd: str
+    """
+    cmd = [script, software, version]
+    process = subprocess.Popen(" ".join(cmd),
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               shell=True,
+                               cwd=wd)
+    print("running post install script ...")
+    stdout, stderr = process.communicate()
+    if stdout:
+        print(stdout)
+    if stderr:
+        print(stderr)

@@ -1,25 +1,17 @@
 # stdlib modules
-import os
 from setuptools import setup
 
 
-def get_default_config():
-    """
-    Gets the default configuration file that ship with the repository.
-
-    :rtype: str
-    """
-    path = os.path.join(os.path.dirname(__file__), "config", "software.json")
-    return os.path.abspath(path)
-
-
-setup(name="PackagerBuddy",
-      version="1.0.1",
+setup(name="packagerbuddy",
+      version="1.1.0",
       description="JSON config based software packager.",
       license="MIT",
       author="C&eacute;dric Duriau",
       author_email="duriau.cedric@live.be",
-      url="https://github.com/cedricduriau/PackagerBuddy",
+      url="https://github.com/cedricduriau/packagerbuddy",
       packages=["packagerbuddy"],
       scripts=["bin/packagerbuddy"],
-      data_files=[("config", [get_default_config()])])
+      data_files=[("~/.packagerbuddy/source", []),
+                  ("~/.packagerbuddy/installed", []),
+                  ("~/.packagerbuddy/config", []),
+                  ("~/.packagerbuddy/scripts", [])])

@@ -3,10 +3,8 @@
 [![Build Status](https://travis-ci.org/cedricduriau/packagerbuddy.svg?branch=master)](https://travis-ci.org/cedricduriau/packagerbuddy)
 [![codecov](https://codecov.io/gh/cedricduriau/packagerbuddy/branch/master/graph/badge.svg)](https://codecov.io/gh/cedricduriau/packagerbuddy)
 [![platform](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
-[![python](https://img.shields.io/badge/python-2-blue.svg)](https://img.shields.io/badge/python-2-blue.svg)
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](https://img.shields.io/badge/python-2-blue.svg)
-
-
+[![license](https://img.shields.io/badge/license-MIT-green.svg)](https://img.shields.io/badge/license-MIT-green.svg)
+[![python](https://img.shields.io/badge/python-2.7%20|%203.6-blue.svg)](https://img.shields.io/badge/python-2.7%20|%203.6-blue.svg)
 
 ## Overview
 
@@ -29,9 +27,6 @@ Or a specific release version:
 
 `pip install git+git://github.com/cedricduriau/PackagerBuddy.git@1.0.1`
 
-After successfully installing the repository, run the following command:
-
-`packagerbuddy setup`
 
 This will create all default directories and copy the default configuration file that ships with the repository. (see [Configure](#Configure))
 
@@ -74,12 +69,13 @@ packagerbuddy install --software foo --version 1.0.0
 packagerbuddy install --software foo --version 1.0.0 --force
 ```
 
-Installing consists of four steps:
+Installing consists of five steps:
 
 1. Download the software from the url in the configs to the designated download directory.
 2. Unpack the downloaded content.
 3. Install/move the unpacked content to the designated install directory.
 4. Create a package file inside the installed directory.
+5. Run the post install script from the designated scripts directory.
 
 ### List installed software
 The `list` command prints all installed software. PackagerBuddy knows the difference between ordinary directories and software it installed thanks to a package file which is written out at install time.
@@ -123,3 +119,17 @@ packagerbuddy uninstall --software foo --dry-run
   * default: custom directory in the user home. (`~/.packagerbuddy/source`)
 * `PB_INSTALL`: Directory the software will be installed in.
   * default: custom directory in the user home. (`~/.packagerbuddy/installed`)
+* `PB_SCRIPTS`: Directory of the post install scripts.
+  * default: custom directory in the user home. (`~/.packagerbuddy/scripts`)
+
+
+### Examples
+
+If you want to try out the example shipping with the repository, run following commands from the root of this repo:
+
+* `cp examples/config/software.json ~/.packagerbuddy/config/`
+* `cp examples/scripts/vscode ~/.packagerbuddy/scripts/`
+
+This will allow you to install three software packages. One of them is `vscode` (Visual Studio Code), which has a post install script.
+Check out the `vscode` post install script for its inner working.
+Check out the [vscode release notes](https://code.visualstudio.com/updates) for a valid version number to install.
