@@ -324,8 +324,7 @@ def install(software, version, force=False):
 
     # create .pbsoftware file
     cache_file = os.path.join(install_path, ".pbsoftware")
-    if not os.path.exists(cache_file):
-        open(cache_file, "w+").close()
+    open(cache_file, "w+").close()
 
     # run post install script
     script = get_script(software)
