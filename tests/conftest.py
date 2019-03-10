@@ -42,7 +42,7 @@ def patch_PB_SCRIPTS(monkeypatch):
 
 
 @pytest.fixture
-def patch_urllib2(monkeypatch):
-    """Monkey patches the urllib2 module to return custom requests."""
+def patch_url_handler(monkeypatch):
+    """Monkey patches the urllib http handler to return a custom class."""
     my_opener = build_opener(MockHTTPHandler)
     install_opener(my_opener)
