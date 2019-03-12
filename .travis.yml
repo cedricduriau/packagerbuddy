@@ -12,7 +12,6 @@ jobs:
   include:
     - stage: check
       script: ./runcheck
-    - stage: test
-      script: ./runtests
+script: ./runtests
 after_success:
   - codecov
