@@ -139,7 +139,7 @@ def test_get_installed_software(patch_PB_INSTALL):
 
 def test_get_suported_extensions():
     """Test getting the supported software archive extensions."""
-    assert packagerbuddy.get_suported_extensions() == set([".tar", ".tar.gz", ".tar.bz"])
+    assert packagerbuddy.get_suported_extensions() == set([".tar", ".tar.gz", ".tar.bz2"])
 
 
 def test_validate_config(patch_url_handler):
