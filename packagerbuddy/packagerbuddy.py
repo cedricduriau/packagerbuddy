@@ -367,7 +367,7 @@ def get_suported_extensions():
 
     :rtype: set[str]
     """
-    return {".tar", ".tar.gz", ".tar.bz2"}
+    return {".gz", ".tar", ".tar.gz", ".tar.bz2"}
 
 
 def validate_config(config, software, version):
