@@ -112,7 +112,7 @@ def _build_parser():
     parser.usage = usage + "".join(usages)
 
     # description
-    parser.description = """Config based software packager."""
+    parser.description = "JSON config based software packager."
 
     return parser
 
