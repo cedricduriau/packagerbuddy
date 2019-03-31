@@ -16,6 +16,7 @@ def _build_parser():
     :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
+    parser.set_defaults(action="")
     subparsers = parser.add_subparsers()
 
     # ========================================================================
@@ -23,7 +24,7 @@ def _build_parser():
     # ========================================================================
     help = "add a software configuration"
     parser_add = subparsers.add_parser("add", help=help)
-    parser_add.set_defaults(which="add")
+    parser_add.set_defaults(action="add")
 
     # required arguments
     req_args = parser_add.add_argument_group("required arguments")
@@ -39,7 +40,7 @@ def _build_parser():
     # ========================================================================
     help = "remove a software configuration"
     parser_remove = subparsers.add_parser("remove", help=help)
-    parser_remove.set_defaults(which="remove")
+    parser_remove.set_defaults(action="remove")
 
     # required arguments
     req_args = parser_remove.add_argument_group("required arguments")
@@ -50,7 +51,7 @@ def _build_parser():
     # ========================================================================
     help = "installs a software version"
     parser_install = subparsers.add_parser("install", help=help)
-    parser_install.set_defaults(which="install")
+    parser_install.set_defaults(action="install")
 
     # required arguments
     req_args = parser_install.add_argument_group("required arguments")
@@ -69,21 +70,21 @@ def _build_parser():
     # ========================================================================
     help = "shows all installed software versions"
     parser_list = subparsers.add_parser("list", help=help)
-    parser_list.set_defaults(which="list")
+    parser_list.set_defaults(action="list")
 
     # ========================================================================
     # avail
     # ========================================================================
     help = "shows all available software packages to install"
     parser_avail = subparsers.add_parser("avail", help=help)
-    parser_avail.set_defaults(which="avail")
+    parser_avail.set_defaults(action="avail")
 
     # ========================================================================
     # uninstall
     # ========================================================================
     help = "uninstall one or all versions of a software"
     parser_uninstall = subparsers.add_parser("uninstall", help=help)
-    parser_uninstall.set_defaults(which="uninstall")
+    parser_uninstall.set_defaults(action="uninstall")
 
     # required arguments
     req_args = parser_uninstall.add_argument_group("required arguments")
@@ -120,7 +121,7 @@ def _build_parser():
 if __name__ == "__main__":
     parser = _build_parser()
     namespace = parser.parse_args()
-    action = namespace.which
+    action = namespace.action
 
     if action == "install":
         packagerbuddy.install(namespace.software,
@@ -151,3 +152,7 @@ if __name__ == "__main__":
         packagerbuddy.add_software(namespace.software, namespace.url)
     elif action == "remove":
         packagerbuddy.remove_software(namespace.software)
+    else:
+        RED = "\033[91m"
+        ENDCOLOR = "\033[0m"
+        parser.error(RED + "please provide an action" + ENDCOLOR)
