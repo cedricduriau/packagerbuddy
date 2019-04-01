@@ -103,7 +103,7 @@ def _get_tar_read_mode(tar_file):
     read_mode = "r"
 
     # add suffix based on compression extension
-    if tar_file.endswith(".gz"):  # supports both .gz and .tar.gz
+    if tar_file.endswith(".tgz") or tar_file.endswith(".tar.gz"):
         read_mode += ":gz"
     elif tar_file.endswith("tar.bz2"):
         read_mode += ":bz2"
@@ -367,7 +367,7 @@ def get_suported_extensions():
 
     :rtype: set[str]
     """
-    return {".gz", ".tar", ".tar.gz", ".tar.bz2"}
+    return {".tgz", ".tar", ".tar.gz", ".tar.bz2"}
 
 
 def validate_config(config, software, version):
