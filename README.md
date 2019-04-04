@@ -127,8 +127,7 @@ packagerbuddy uninstall --software foo --dry-run
 
 If you want to try out the example shipping with the repository, run following commands from the root of this repo:
 
-* `cp examples/config/software.json ~/.packagerbuddy/config/`
-* `cp examples/scripts/vscode ~/.packagerbuddy/scripts/`
+* `cp -R ./examples/* ~/.packagerbuddy/`
 
 This will allow you to install three software packages. One of them is `vscode` (Visual Studio Code), which has a post install script.
 Check out the `vscode` post install script for its inner working.
