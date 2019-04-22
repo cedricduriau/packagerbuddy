@@ -16,7 +16,6 @@ def _build_parser():
     :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
-    parser.set_defaults()
     subparsers = parser.add_subparsers()
 
     # ========================================================================
