@@ -4,7 +4,7 @@ from setuptools import setup
 
 
 setup(name="packagerbuddy",
-      version="1.2.0",
+      version="1.2.1",
       description="JSON config based software packager.",
       license="MIT",
       author="C&eacute;dric Duriau",
