@@ -16,7 +16,7 @@ def _build_parser():
     :rtype: argparse.ArgumentParser
     """
     parser = argparse.ArgumentParser()
-    parser.set_defaults(action="")
+    parser.set_defaults()
     subparsers = parser.add_subparsers()
 
     # ========================================================================
@@ -152,7 +152,3 @@ if __name__ == "__main__":
         packagerbuddy.add_software(namespace.software, namespace.url)
     elif action == "remove":
         packagerbuddy.remove_software(namespace.software)
-    else:
-        RED = "\033[91m"
-        ENDCOLOR = "\033[0m"
-        parser.error(RED + "please provide an action" + ENDCOLOR)
