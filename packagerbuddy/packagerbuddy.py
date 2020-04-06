@@ -40,7 +40,8 @@ def _get_filename_from_request(request):
     try:
         headers = request.headers
         content = headers["content-disposition"]
-        return content.split("filename=")[1]
+        filename_str = content.split("filename=")[1]
+        return filename_str.strip("\"")
     except (KeyError, AttributeError):
         return os.path.basename(request.url)
 
@@ -185,6 +186,8 @@ def _split_ext(path):
         path = path.split("&")[0]
 
     # assume non .tar extensions do not have any suffix/compression
+    ext = None
+
     if ".tar" not in path:
         path_noext, ext = os.path.splitext(path)
     else:
@@ -318,6 +321,7 @@ def install(software, version, force=False):
     # install / move
     print("installing ...")
     install_dir = get_install_location()
+
     install_path = os.path.join(install_dir, os.path.basename(target_path))
     if not os.path.exists(install_path):
         shutil.move(target_path, install_path)
