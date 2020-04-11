@@ -35,11 +35,7 @@ This will create all default directories and copy the default configuration file
 The add command requires two arguments. The `software` argument used as alias to interact with, and the `url` argument which needs to be an url containing a version placeholder.
 
 ```
-# short notation
-packagerbuddy add -s foo -u http://foo.com/releases/{version}
-
-# long notation
-packagerbuddy add --software foo --url http://foo.com/releases/{version}
+packagerbuddy add --software codium --url https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-linux-x64-{version}.tar.gz
 ```
 
 ### Remove software
@@ -47,11 +43,7 @@ packagerbuddy add --software foo --url http://foo.com/releases/{version}
 The remove command requires a single argument, the `software` argument, which needs to match an already added software. To list the available software packages, see `avail` command below.
 
 ```
-# short notation
-packagerbuddy remove -s foo
-
-# long notiation
-packagerbuddy remove --software foo
+packagerbuddy remove --software codium
 ```
 
 ### Install software
@@ -59,13 +51,8 @@ The `install` command requires two arguments. The `software` argument which need
 again, the `force` flag covers this feature.
 
 ```
-# short notation
-packagerbuddy install -s foo -v 1.0.0
-packagerbuddy install -s foo -v 1.0.0 -f
-
-# long notation
-packagerbuddy install --software foo --version 1.0.0
-packagerbuddy install --software foo --version 1.0.0 --force
+packagerbuddy install --software codium --version 1.44.0
+packagerbuddy install --software codium --version 1.44.0 --force
 ```
 
 Installing consists of five steps:
@@ -95,18 +82,15 @@ The `version` argument is optional. If it is passed, only given version will be 
 
 If you're the kind of person that prepares a batch of commands before running them and then feed those to a terminal, there is also a `--dry-run` flag for you to enjoy.
 ```
-# short notation
-packagerbuddy uninstall -s foo  # uninstalls all versions
-packagerbuddy uninstall -s foo -v 1.0.0 # only uninstalls v1.0.0
+# uninstall all versions
+packagerbuddy uninstall --software codium
 
-# long notation
-packagerbuddy uninstall --software foo # uninstalls all versions
-packagerbuddy uninstall --software foo --version 1.0.0 # only uninstalls v1.0.0
+# uninstall specific version
+packagerbuddy uninstall --software codium --version 1.44.0
 
-# dry run just prints and does not remove anything at all
-packagerbuddy uninstall --software foo --dry-run
+# dry run, execute without removing
+packagerbuddy uninstall --software codium --dry-run
 ```
-
 
 ## Configure
 
@@ -128,6 +112,6 @@ If you want to try out the example shipping with the repository, run following c
 
 * `cp -R ./examples/* ~/.packagerbuddy/`
 
-This will allow you to install three software packages. One of them is `vscode` (Visual Studio Code), which has a post install script.
-Check out the `vscode` post install script for its inner working.
+This will allow you to install three software packages. One of them is `code` (Visual Studio Code), which has a post install script.
+Check out the `code` post install script for its inner working.
 Check out the [vscode release notes](https://code.visualstudio.com/updates) for a valid version number to install.
