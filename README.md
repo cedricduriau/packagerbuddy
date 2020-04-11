@@ -24,7 +24,7 @@ If you wish to install the current master, use the following command:
 
 Or a specific release version:
 
-`pip install git+git://github.com/cedricduriau/packagerbuddy.git@1.3.0`
+`pip install git+git://github.com/cedricduriau/packagerbuddy.git@v1.3.0`
 
 
 This will create all default directories and copy the default configuration file that ships with the repository. (see [Configure](#Configure))
