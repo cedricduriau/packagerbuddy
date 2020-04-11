@@ -134,10 +134,13 @@ def _untar(archive):
         if archive_subdir == ".":
             basename, _ext = _split_ext(os.path.basename(archive))
             archive_subdir = basename
+            extract_dir = os.path.join(directory, archive_subdir)
+        else:
+            extract_dir = directory
 
         # extract
+        tar.extractall(path=extract_dir)
         path = os.path.join(directory, archive_subdir)
-        tar.extractall(path=path)
         return path
 
 
