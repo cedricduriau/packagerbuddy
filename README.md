@@ -1,10 +1,9 @@
 # PackagerBuddy
 
-[![Build Status](https://travis-ci.org/cedricduriau/packagerbuddy.svg?branch=master)](https://travis-ci.org/cedricduriau/packagerbuddy)
-[![codecov](https://codecov.io/gh/cedricduriau/packagerbuddy/branch/master/graph/badge.svg)](https://codecov.io/gh/cedricduriau/packagerbuddy)
-[![platform](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](https://img.shields.io/badge/license-MIT-green.svg)
-[![python](https://img.shields.io/badge/python-2.7%20|%203.6-blue.svg)](https://img.shields.io/badge/python-2.7%20|%203.6-blue.svg)
+![](https://github.com/cedricduriau/packagerbuddy/workflows/Build/badge.svg?branch=master)
+[![Platform](https://img.shields.io/badge/Platform-linux-lightgrey.svg)](https://img.shields.io/badge/Platform-linux-lightgrey.svg)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://img.shields.io/badge/License-MIT-green.svg)
+[![Python](https://img.shields.io/badge/Python-2.7%20|%203.6-blue.svg)](https://img.shields.io/badge/Python-2.7%20|%203.6-blue.svg)
 
 ## Overview
 
