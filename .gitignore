@@ -1,8 +1,10 @@
-# directories
-.vscode
-.pytest_cache
-__pycache__
-
 # files
 *.pyc
 .coverage
+
+# directories
+.vscode/
+__pycache__/
+build/
+dist/
+*.egg-info/
