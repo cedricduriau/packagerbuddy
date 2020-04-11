@@ -1,7 +1,0 @@
-
-[dev]
-codecov==2.0.*
-flake8==3.6.*
-pytest-cov==2.*
-pytest==4.0.*
-radon==2.4.*
