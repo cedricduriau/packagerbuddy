@@ -1,8 +1,8 @@
 # PackagerBuddy
 
 ![](https://github.com/cedricduriau/packagerbuddy/workflows/Build/badge.svg?branch=master)
-[![Platform](https://img.shields.io/badge/Platform-linux-lightgrey.svg)](https://img.shields.io/badge/Platform-linux-lightgrey.svg)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://img.shields.io/badge/License-MIT-green.svg)
+[![Platform](https://img.shields.io/badge/Platform-linux--64-lightgrey.svg)](https://img.shields.io/badge/Platform-linux--64-lightgrey.svg)
+ [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python](https://img.shields.io/badge/Python-2.7%20|%203.6-blue.svg)](https://img.shields.io/badge/Python-2.7%20|%203.6-blue.svg)
 
 ## Overview

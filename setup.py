@@ -6,7 +6,7 @@ from setuptools import setup
 setup(name="packagerbuddy",
       version="1.2.1",
       description="JSON config based software packager.",
-      license="MIT",
+      license="GPLv3",
       author="C&eacute;dric Duriau",
       author_email="duriau.cedric@live.be",
       url="https://github.com/cedricduriau/packagerbuddy",
