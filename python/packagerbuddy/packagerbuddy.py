@@ -130,11 +130,15 @@ def _untar(archive):
     # https://docs.python.org/2.7/library/tarfile.html#tarfile.open
     directory = os.path.dirname(archive)
     with tarfile.open(archive, read_mode) as tar:
-        # extract
-        tar.extractall(path=directory)
+        archive_subdir = tar.getnames()[0]
+        if archive_subdir == ".":
+            basename, _ext = _split_ext(os.path.basename(archive))
+            archive_subdir = basename
 
-        # assume archive contains single directory to build full path from
-        return os.path.join(directory, tar.getnames()[0])
+        # extract
+        path = os.path.join(directory, archive_subdir)
+        tar.extractall(path=path)
+        return path
 
 
 def _build_download_url(template, version):
