@@ -1,0 +1,11 @@
+Metadata-Version: 2.1
+Name: packagerbuddy
+Version: 1.2.1
+Summary: JSON config based software packager.
+Home-page: https://github.com/cedricduriau/packagerbuddy
+Author: C&eacute;dric Duriau
+Author-email: duriau.cedric@live.be
+License: GPLv3
+Description: UNKNOWN
+Platform: UNKNOWN
+Provides-Extra: dev

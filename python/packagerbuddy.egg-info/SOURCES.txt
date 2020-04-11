@@ -1,0 +1,9 @@
+README.md
+bin/packagerbuddy
+python/packagerbuddy/__init__.py
+python/packagerbuddy/packagerbuddy.py
+python/packagerbuddy.egg-info/PKG-INFO
+python/packagerbuddy.egg-info/SOURCES.txt
+python/packagerbuddy.egg-info/dependency_links.txt
+python/packagerbuddy.egg-info/requires.txt
+python/packagerbuddy.egg-info/top_level.txt

@@ -4,5 +4,5 @@ set currentdir [file dirname $ModulesCurrentModulefile]
 conflict packagerbuddy
 
 prepend-path PATH $currentdir/bin
-prepend-path PYTHONPATH $currentdir
+prepend-path PYTHONPATH $currentdir/python
 setenv PB_CONFIG $currentdir/config/software.json
