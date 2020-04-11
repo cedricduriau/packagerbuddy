@@ -1,5 +1,6 @@
 {
     "modules": "https://github.com/cea-hpc/modules/releases/download/v{version}/modules-{version}.tar.gz",
     "pycharm-community": "https://download.jetbrains.com/python/pycharm-community-{version}.tar.gz",
-    "vscode": "https://vscode-update.azurewebsites.net/{version}/linux-x64/stable"
+    "code": "https://vscode-update.azurewebsites.net/{version}/linux-x64/stable",
+    "codium": "https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-linux-x64-{version}.tar.gz"
 }

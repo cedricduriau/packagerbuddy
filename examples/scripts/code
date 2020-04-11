@@ -43,8 +43,8 @@ fi
 # ======================================
 # create symlink to user home bin
 # ======================================
-src_exec=$link/bin/code
-dst_exec=$usr_bin/vscode
+src_exec=$link/$software
+dst_exec=$usr_bin/$software
 
 if [ \( -e $dst_exec \) ]
 then
