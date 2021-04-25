@@ -10,7 +10,7 @@ package_dir = os.path.join(os.path.dirname(f), "python")
 sys.path.insert(0, package_dir)
 from packagerbuddy import __version__  # noqa
 
-requirements_dev = ["flake8", "radon", "pytest", "pytest-cov", "coverage"]
+requirements_dev = ["flake8", "flake8_polyfill", "radon", "pytest", "pytest-cov", "coverage"]
 
 
 setup(name="packagerbuddy",
