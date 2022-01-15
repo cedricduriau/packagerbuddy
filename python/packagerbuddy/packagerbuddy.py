@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 import os
 import json
-import glob
 import shutil
 import tarfile
 import subprocess
@@ -370,8 +369,14 @@ def get_installed_software():
     :rtype: list[str]
     """
     install_dir = get_install_location()
-    pb_package_files = glob.glob(os.path.join(install_dir, "*", ".pbsoftware"))
-    return sorted(map(os.path.dirname, pb_package_files))
+    software = []
+    for dname in os.listdir(install_dir):
+        path = os.path.join(install_dir, dname)
+        pb_package_file = os.path.join(path, ".pbsoftware")
+        if not os.path.islink(path) and os.path.exists(pb_package_file):
+            software.append(path)
+    software.sort()
+    return software
 
 
 def get_suported_extensions():
