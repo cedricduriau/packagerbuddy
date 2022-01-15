@@ -374,7 +374,7 @@ def get_installed_software():
         path = os.path.join(install_dir, dname)
         pb_package_file = os.path.join(path, ".pbsoftware")
         if not os.path.islink(path) and os.path.exists(pb_package_file):
-            software.append(dname)
+            software.append(path)
     software.sort()
     return software
 
