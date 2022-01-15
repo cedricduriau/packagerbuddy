@@ -370,8 +370,14 @@ def get_installed_software():
     :rtype: list[str]
     """
     install_dir = get_install_location()
-    pb_package_files = glob.glob(os.path.join(install_dir, "*", ".pbsoftware"))
-    return sorted(map(os.path.dirname, pb_package_files))
+    software = []
+    for dname in os.listdir(install_dir):
+        path = os.path.join(install_dir, dname)
+        pb_package_file = os.path.join(path, ".pbsoftware")
+        if not os.path.islink(path) and os.path.exists(pb_package_file):
+            software.append(dname)
+    software.sort()
+    return software
 
 
 def get_suported_extensions():
