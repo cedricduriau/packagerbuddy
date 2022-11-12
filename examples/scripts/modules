@@ -4,9 +4,10 @@
 # Enviroment Modules post install script
 # =============================================================================
 # This script will do the following:
-# 1. run the pre-compile configuration
-# 2. compile the code
-# 3. create a symlink of the compiled command lines to the system
+# 1. create a symlink of the install dir without a version number in the name
+# 2. run the pre-compile configuration
+# 3. compile the code
+# 4. create a symlink of the compiled command lines to the system
 #
 # WARNING: Any existing symlink will be remove to relink with current version of the software.
 # =============================================================================
