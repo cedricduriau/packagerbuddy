@@ -3,6 +3,7 @@
 # stdlib modules
 from __future__ import absolute_import
 import os
+import sys
 import argparse
 
 # tool modules
@@ -120,7 +121,13 @@ def _build_parser():
 if __name__ == "__main__":
     parser = _build_parser()
     namespace = parser.parse_args()
-    action = namespace.action
+
+    try:
+        action = namespace.action
+    except AttributeError:
+        action = None
+        print("No action provided, see actions using -h/--help.")
+        sys.exit()
 
     if action == "install":
         packagerbuddy.install(namespace.software,
