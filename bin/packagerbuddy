@@ -18,9 +18,9 @@ def _build_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    # ========================================================================
+    # =========================================================================
     # add
-    # ========================================================================
+    # =========================================================================
     help = "add a software configuration"
     parser_add = subparsers.add_parser("add", help=help)
     parser_add.set_defaults(action="add")
@@ -34,9 +34,9 @@ def _build_parser():
     help = "download url template"
     req_args.add_argument("-u", "--url", help=help)
 
-    # ========================================================================
+    # =========================================================================
     # remove
-    # ========================================================================
+    # =========================================================================
     help = "remove a software configuration"
     parser_remove = subparsers.add_parser("remove", help=help)
     parser_remove.set_defaults(action="remove")
@@ -45,9 +45,9 @@ def _build_parser():
     req_args = parser_remove.add_argument_group("required arguments")
     req_args.add_argument("-s", "--software", help="name of the software")
 
-    # ========================================================================
+    # =========================================================================
     # install
-    # ========================================================================
+    # =========================================================================
     help = "installs a software version"
     parser_install = subparsers.add_parser("install", help=help)
     parser_install.set_defaults(action="install")
@@ -64,23 +64,23 @@ def _build_parser():
     help = "force the install procedure again"
     parser_install.add_argument("-f", "--force", action="store_true", help=help)
 
-    # ========================================================================
+    # =========================================================================
     # list
-    # ========================================================================
+    # =========================================================================
     help = "shows all installed software versions"
     parser_list = subparsers.add_parser("list", help=help)
     parser_list.set_defaults(action="list")
 
-    # ========================================================================
+    # =========================================================================
     # avail
-    # ========================================================================
+    # =========================================================================
     help = "shows all available software packages to install"
     parser_avail = subparsers.add_parser("avail", help=help)
     parser_avail.set_defaults(action="avail")
 
-    # ========================================================================
+    # =========================================================================
     # uninstall
-    # ========================================================================
+    # =========================================================================
     help = "uninstall one or all versions of a software"
     parser_uninstall = subparsers.add_parser("uninstall", help=help)
     parser_uninstall.set_defaults(action="uninstall")
@@ -98,9 +98,9 @@ def _build_parser():
     help = "perform a trial run with no changes made"
     parser_uninstall.add_argument("--dry-run", action="store_true", help=help)
 
-    # ========================================================================
+    # =========================================================================
     # parser settings
-    # ========================================================================
+    # =========================================================================
     # usage
     usages = []
     usages.append(parser_install.format_usage())
