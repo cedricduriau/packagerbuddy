@@ -15,7 +15,7 @@ jobs:
 
     - name: Install
       run: |
-        make install
+        make install-dev
     - name: Lint
       run: |
         make check
