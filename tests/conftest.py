@@ -7,10 +7,10 @@ except ImportError:
     from urllib2 import build_opener, install_opener
 
 # tool modules
-from tests.mock_urllib import MockHTTPHandler
-
 # third party modules
 import pytest
+
+from tests.mock_urllib import MockHTTPHandler
 
 
 @pytest.fixture

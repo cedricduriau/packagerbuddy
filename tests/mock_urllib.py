@@ -1,12 +1,8 @@
-# stdlib modules
-try:
-    from urllib.response import addinfourl
-    from urllib.error import HTTPError
-    from urllib.request import HTTPHandler
-    from io import StringIO
-except ImportError:
-    from urllib2 import addinfourl, HTTPError, HTTPHandler
-    from StringIO import StringIO
+# stdlib
+from io import StringIO
+from urllib.error import HTTPError
+from urllib.request import HTTPHandler
+from urllib.response import addinfourl
 
 
 def mock_response(req):
