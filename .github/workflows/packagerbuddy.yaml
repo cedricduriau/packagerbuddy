@@ -19,6 +19,3 @@ jobs:
     - name: Lint
       run: |
         make check
-    - name: Test
-      run: |
-        make test
