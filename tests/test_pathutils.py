@@ -8,6 +8,7 @@ from packagerbuddy import pathutils
 @pytest.mark.parametrize(
     ["path", "expected_root", "expected_ext"],
     [
+        ("/root/dir/file.txt", "/root/dir/file.txt", ""),
         ("/root/dir/file.zip", "/root/dir/file", ".zip"),
         ("/root/dir/file.tar", "/root/dir/file", ".tar"),
         ("/root/dir/file.tar.gz", "/root/dir/file", ".tar.gz"),
