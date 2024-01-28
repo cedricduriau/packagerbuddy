@@ -4,11 +4,11 @@ import os
 from urllib.request import urlopen
 
 # package
-from packagerbuddy import settings
+from packagerbuddy import pathutils, settings
 
 
 def build_archive_path(software: str, version: str, url: str) -> str:
-    _, ext = os.path.splitext(url)
+    _, ext = pathutils.split_ext(url)
     basename = "-".join([software, version]) + ext
     dir_archive = os.path.join(settings.DIR_DOWNLOAD, basename)
     return dir_archive
