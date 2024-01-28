@@ -25,10 +25,13 @@ def test_dump(monkeypatch: pytest.MonkeyPatch) -> None:
         assert config == tmp_data
 
 
-@pytest.mark.parametrize(["software", "configured"], [
-    ("foo", True),
-    ("bar", False),
-])
+@pytest.mark.parametrize(
+    ["software", "configured"],
+    [
+        ("foo", True),
+        ("bar", False),
+    ],
+)
 def test_is_software_configured(
     software: str,
     configured: bool,
