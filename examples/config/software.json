@@ -1,3 +1,4 @@
 {
-    "codium": "https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-darwin-arm64-{version}.zip"
+    "codium-zip": "https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-darwin-arm64-{version}.zip",
+    "codium-targz": "https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-linux-arm64-{version}.tar.gz"
 }

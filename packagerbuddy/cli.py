@@ -2,27 +2,30 @@
 
 # stdlib
 import argparse
-import json
 import os
 
 # package
-from packagerbuddy import configutils, downloadutils, settings
+from packagerbuddy import archiveutils, configutils, downloadutils, settings
 
 
 # ==============================================================================
 # actions
 # ==============================================================================
 def setup():
-    dirs = [settings.DIR_CONFIG, settings.DIR_DOWNLOAD, settings.DIR_INSTALL]
+    dirs = [
+        settings.DIR_CONFIG,
+        settings.DIR_DOWNLOAD,
+        settings.DIR_INSTALL,
+        settings.DIR_SCRIPTS,
+    ]
     for d in dirs:
         if not os.path.exists(d):
             print(f"creating directory {d}")
             os.makedirs(d)
 
     if not os.path.exists(settings.FILE_CONFIG):
-        with open(settings.FILE_CONFIG, "w") as fp:
-            print(f"creating file {settings.FILE_CONFIG}")
-            json.dump({}, fp)
+        print(f"creating file {settings.FILE_CONFIG}")
+        configutils.dump({})
 
 
 def list_available_software() -> None:
@@ -78,10 +81,19 @@ def install_software(software: str, version: str) -> None:
         config = configutils.load()
         archive = downloadutils.download(software, version, config)
 
-    # TODO: extract (into {software-version} dir if possible)
-    # TODO: move into {software}
+    dir_temp = archiveutils.build_temporary_install_path(software, version)
+    os.makedirs(dir_temp, exist_ok=True)
 
-    print(archive)
+    archiveutils.unarchive(archive, dir_temp)
+
+    dir_install = archiveutils.build_install_path(software, version)
+    if not os.path.exists(dir_install):
+        os.makedirs(dir_install)
+
+    config = configutils.load()
+    archiveutils.cleanup(config, software, version)
+
+    print(dir_install)
 
 
 # ==============================================================================
@@ -181,9 +193,6 @@ def run() -> None:
         func = kwargs.pop("func")
     except KeyError:
         print("Missing or incomplete action, see -h/--help")
-        exit()
+        exit(1)
 
-    try:
-        func(**kwargs)
-    except Exception as e:
-        print(e)
+    func(**kwargs)
