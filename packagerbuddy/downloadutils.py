@@ -21,7 +21,13 @@ def find_archive(software: str, version: str) -> str | None:
     return None
 
 
-def download(url: str, dir_archive: str) -> str:
+def download(software: str, version: str, config: dict[str, str]) -> str:
+    template = config[software]
+    url = template.format(version=version)
+    archive = build_archive_path(software, version, url)
+
     result = urlopen(url)
-    with open(dir_archive, "wb+") as fp:
+    with open(archive, "wb+") as fp:
         fp.write(result.read())
+
+    return archive

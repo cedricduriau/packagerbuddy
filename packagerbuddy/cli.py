@@ -68,10 +68,7 @@ def download_software(software: str, version: str) -> None:
         return
 
     config = configutils.load()
-    template = config[software]
-    url = template.format(version=version)
-    archive = downloadutils.build_archive_path(software, version, url)
-    downloadutils.download(url, archive)
+    archive = downloadutils.download(software, version, config)
     print(archive)
 
 
@@ -79,10 +76,7 @@ def install_software(software: str, version: str) -> None:
     archive = downloadutils.find_archive(software, version)
     if not archive:
         config = configutils.load()
-        template = config[software]
-        url = template.format(version=version)
-        archive = downloadutils.build_archive_path(software, version, url)
-        downloadutils.download(url, archive)
+        archive = downloadutils.download(software, version, config)
 
     # TODO: extract (into {software-version} dir if possible)
     # TODO: move into {software}
@@ -94,11 +88,6 @@ def install_software(software: str, version: str) -> None:
 # parser
 # ==============================================================================
 def build_parser():
-    """
-    Builds the command line interface.
-
-    :rtype: argparse.ArgumentParser
-    """
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
