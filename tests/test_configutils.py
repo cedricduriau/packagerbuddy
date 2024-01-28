@@ -1,11 +1,11 @@
-# third party
+# stdlib
 import json
-import tempfile
 
+# third party
 import pytest
 
 # package
-from packagerbuddy import configutils, settings
+from packagerbuddy import configutils
 
 
 def test_load(mock_settings_file_config: None) -> None:
