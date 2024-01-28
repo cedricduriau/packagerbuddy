@@ -13,14 +13,11 @@ def test_load(mock_settings_file_config: None) -> None:
     assert config == {"foo": r"https://example.com/{version}/foo.zip"}
 
 
-def test_dump(monkeypatch: pytest.MonkeyPatch) -> None:
-    _, tmp_config = tempfile.mkstemp(suffix=".json", prefix="software")
-    monkeypatch.setattr(settings, "FILE_CONFIG", tmp_config)
-
+def test_dump(fix_file_config_tmp: str) -> None:
     tmp_data = {"bar": r"https://example.com/{version}/bar.zip"}
     configutils.dump(tmp_data)
 
-    with open(tmp_config, "r") as fp:
+    with open(fix_file_config_tmp, "r") as fp:
         config = json.load(fp)
         assert config == tmp_data
 
@@ -41,13 +38,13 @@ def test_is_software_configured(
     assert configutils.is_software_configured(config, software) is configured
 
 
-def test_add(fix_tmp_config: str) -> None:
+def test_add(fix_file_config_tmp: str) -> None:
     config = configutils.load()
     configutils.add_software(config, "bar", r"https://example.com/{version}/bar.zip")
     assert config["bar"] == r"https://example.com/{version}/bar.zip"
 
 
-def test_remove(fix_tmp_config: str) -> None:
+def test_remove(fix_file_config_tmp: str) -> None:
     config = configutils.load()
     configutils.add_software(config, "bar", r"https://example.com/{version}/bar.zip")
     assert "bar" in config

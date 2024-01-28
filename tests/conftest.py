@@ -20,6 +20,18 @@ def fix_test_data() -> str:
 
 
 @pytest.fixture
+def fix_dir_config(fix_test_data: str) -> str:
+    path = os.path.join(fix_test_data, "config")
+    return path
+
+
+@pytest.fixture
+def fix_file_config(fix_dir_config: str) -> str:
+    path = os.path.join(fix_dir_config, "software.json")
+    return path
+
+
+@pytest.fixture
 def fix_dir_downloaded(fix_test_data: str):
     path = os.path.join(fix_test_data, "downloaded")
     return path
@@ -32,7 +44,7 @@ def fix_dir_installed(fix_test_data: str):
 
 
 @pytest.fixture
-def fix_tmp_config(monkeypatch: pytest.MonkeyPatch) -> None:
+def fix_file_config_tmp(monkeypatch: pytest.MonkeyPatch) -> None:
     _, tmp_config = tempfile.mkstemp(suffix=".json", prefix="software")
     monkeypatch.setattr(settings, "FILE_CONFIG", tmp_config)
 
@@ -46,9 +58,8 @@ def fix_tmp_config(monkeypatch: pytest.MonkeyPatch) -> None:
 # patches
 # ==============================================================================
 @pytest.fixture
-def mock_settings_file_config(fix_test_data: str, monkeypatch: pytest.MonkeyPatch) -> None:
-    path = os.path.join(fix_test_data, "config", "software.json")
-    monkeypatch.setattr(settings, "FILE_CONFIG", path)
+def mock_settings_file_config(fix_file_config: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "FILE_CONFIG", fix_file_config)
 
 
 @pytest.fixture
