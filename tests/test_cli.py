@@ -1,5 +1,6 @@
 # stdlib
 import os
+import shutil
 
 # third party
 import pytest
@@ -154,3 +155,65 @@ def test_download_software(
         assert out == mock_downloadutils_download(software, version) + "\n"
     else:
         assert out == error + "\n"
+
+
+@pytest.mark.parametrize(
+    ["software", "version", "exit_code", "error"],
+    [
+        (" ", "0.1.0", 1, "no software provided"),
+        ("bar", "0.1.0", 1, "software not found"),
+        ("foo", "0.1.0", 0, ""),
+        ("foo", "0.2.0", 0, ""),
+    ],
+)
+def test_install_software(
+    software: str,
+    version: str,
+    exit_code: int,
+    error: str,
+    capsys,
+    fix_dir_installed: str,
+    mock_settings_file_config: None,
+    mock_settings_dir_download: None,
+    mock_settings_dir_install: None,
+):
+    path = os.path.join(fix_dir_installed, f"{software}-{version}")
+    cleanup = not os.path.exists(path)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.run(["install", "-s", software, "-v", version])
+
+    assert exc.value.code == exit_code
+    out, _err = capsys.readouterr()
+
+    if exit_code == 0:
+        assert out == path + "\n"
+        if cleanup:
+            shutil.rmtree(path)
+    else:
+        assert out == error + "\n"
+
+
+@pytest.mark.parametrize(
+    ["software", "version", "count"],
+    [
+        ("", "", 2),
+        ("foo", "", 1),
+        ("bar", "", 1),
+        ("foo", "0.1.0", 1),
+    ],
+)
+def test_list_installed_software(
+    software: str,
+    version: str,
+    count: int,
+    capsys,
+    mock_settings_dir_install: None,
+):
+    with pytest.raises(SystemExit) as exc:
+        cli.run(["list", "-s", software, "-v", version])
+
+    assert exc.value.code == 0
+    out, _err = capsys.readouterr()
+
+    assert len(out.rstrip("\n").split("\n")) == count
