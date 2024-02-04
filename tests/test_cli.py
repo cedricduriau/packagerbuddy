@@ -5,7 +5,7 @@ import os
 import pytest
 
 # package
-from packagerbuddy import cli, configutils
+from packagerbuddy import cli, configutils, downloadutils
 
 
 def test_run():
@@ -131,5 +131,55 @@ def test_remove_software(
 
     if exit_code == 0:
         assert software not in mock_config
+    else:
+        assert out == error + "\n"
+
+
+@pytest.mark.parametrize(
+    ["software", "version", "configured", "found", "exit_code", "error"],
+    [
+        (" ", "0.1.0", False, False, 1, "no software provided"),
+        ("foo", "0.1.0", False, False, 1, "software not found"),
+        ("foo", "0.1.0", True, True, 0, ""),
+        ("foo", "0.1.0", True, False, 0, ""),
+    ],
+)
+def test_download_software(
+    software: str,
+    version: str,
+    configured: bool,
+    found: bool,
+    exit_code: bool,
+    error: str,
+    capsys,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    mock_config: dict = {}
+    if configured:
+        mock_config[software] = "/tmp/foo.zip"
+
+    def mock_configutils_load() -> dict:
+        return mock_config
+
+    def mock_downloadutils_find_archive(software: str, version: str) -> str | None:
+        if found:
+            return "/tmp/foo.zip"
+        return None
+
+    def mock_downloadutils_download(software: str, version: str, config: dict) -> str:
+        return "/tmp/foo.zip"
+
+    monkeypatch.setattr(configutils, "load", mock_configutils_load)
+    monkeypatch.setattr(downloadutils, "find_archive", mock_downloadutils_find_archive)
+    monkeypatch.setattr(downloadutils, "download", mock_downloadutils_download)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.run(["download", "-s", software, "-v", version])
+
+    assert exc.value.code == exit_code
+    out, _err = capsys.readouterr()
+
+    if exit_code == 0:
+        assert out == "/tmp/foo.zip" + "\n"
     else:
         assert out == error + "\n"
