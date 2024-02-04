@@ -59,7 +59,7 @@ def test_list_available_software(capsys, monkeypatch: pytest.MonkeyPatch):
     [
         (" ", "", False, 1, "no software provided"),
         ("foo", " ", False, 1, "no url provided"),
-        ("foo", "bar", True, 0, ""),
+        ("foo", "bar", True, 1, "software already configured"),
         ("foo", "bar", False, 1, r"no {version} format string found in url"),
         ("foo", r"https://example.com/{version}/foo.zip", False, 0, ""),
     ],
@@ -90,9 +90,43 @@ def test_add_software(
         cli.run(["add", "-s", software, "-u", url])
 
     assert exc.value.code == exit_code
-    out, err = capsys.readouterr()
+    out, _err = capsys.readouterr()
 
     if exit_code == 0:
         assert mock_config[software] == url
+    else:
+        assert out == error + "\n"
+
+
+@pytest.mark.parametrize(["software", "configured", "exit_code", "error"], [
+    (" ", False, 1, "no software provided"),
+    ("foo", False, 1, "software not found"),
+    ("foo", True, 0, ""),
+])
+def test_remove_software(
+    software: str,
+    configured: bool,
+    exit_code: bool,
+    error: str,
+    capsys,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    mock_config: dict = {}
+    if configured:
+        mock_config[software] = "bar"
+
+    def mock_configutils_load() -> dict:
+        return mock_config
+
+    monkeypatch.setattr(configutils, "load", mock_configutils_load)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.run(["remove", "-s", software])
+
+    assert exc.value.code == exit_code
+    out, _err = capsys.readouterr()
+
+    if exit_code == 0:
+        assert software not in mock_config
     else:
         assert out == error + "\n"
