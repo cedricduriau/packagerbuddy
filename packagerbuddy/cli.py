@@ -70,12 +70,20 @@ def remove_software(software: str) -> None:
 
 
 def download_software(software: str, version: str) -> None:
+    if not software.strip():
+        print("no software provided")
+        exit(1)
+
+    config = configutils.load()
+    if not configutils.is_software_configured(config, software):
+        print("software not found")
+        exit(1)
+
     archive = downloadutils.find_archive(software, version)
     if archive:
         print(archive)
         return
 
-    config = configutils.load()
     archive = downloadutils.download(software, version, config)
     print(archive)
 
