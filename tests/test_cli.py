@@ -54,13 +54,16 @@ def test_list_available_software(capsys, monkeypatch: pytest.MonkeyPatch):
     assert out == "\n".join(["a", "b"]) + "\n"
 
 
-@pytest.mark.parametrize(["software", "url", "exit_code", "configured"], [
-    ("", "", 1, False),
-    (" ", "", 1, False),
-    ("foo", " ", 1, False),
-    ("foo", "bar", 0, True),
-    ("foo", r"https://example.com/{version}/foo.zip", 0, False),
-])
+@pytest.mark.parametrize(
+    ["software", "url", "exit_code", "configured"],
+    [
+        ("", "", 1, False),
+        (" ", "", 1, False),
+        ("foo", " ", 1, False),
+        ("foo", "bar", 0, True),
+        ("foo", r"https://example.com/{version}/foo.zip", 0, False),
+    ],
+)
 def test_add_software(
     software: str,
     url: str,
