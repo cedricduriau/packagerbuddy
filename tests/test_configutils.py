@@ -10,11 +10,11 @@ from packagerbuddy import configutils
 
 def test_load(mock_settings_file_config: None) -> None:
     config = configutils.load()
-    assert config == {"foo": r"https://example.com/{version}/foo.zip"}
+    assert config == {"foo": r"https://example.com/{version}/foo-{version}.zip"}
 
 
 def test_dump(fix_file_config_tmp: str) -> None:
-    tmp_data = {"bar": r"https://example.com/{version}/bar.zip"}
+    tmp_data = {"bar": r"https://example.com/{version}/bar-{version}.zip"}
     configutils.dump(tmp_data)
 
     with open(fix_file_config_tmp, "r") as fp:
@@ -40,13 +40,13 @@ def test_is_software_configured(
 
 def test_add(fix_file_config_tmp: str) -> None:
     config = configutils.load()
-    configutils.add_software(config, "bar", r"https://example.com/{version}/bar.zip")
-    assert config["bar"] == r"https://example.com/{version}/bar.zip"
+    configutils.add_software(config, "bar", r"https://example.com/{version}/bar-{version}.zip")
+    assert config["bar"] == r"https://example.com/{version}/bar-{version}.zip"
 
 
 def test_remove(fix_file_config_tmp: str) -> None:
     config = configutils.load()
-    configutils.add_software(config, "bar", r"https://example.com/{version}/bar.zip")
+    configutils.add_software(config, "bar", r"https://example.com/{version}/bar-{version}.zip")
     assert "bar" in config
     configutils.remove_software(config, "bar")
     assert "bar" not in config
