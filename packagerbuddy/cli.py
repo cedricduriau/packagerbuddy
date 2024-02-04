@@ -205,16 +205,16 @@ def build_parser():
     return parser
 
 
-def run() -> None:
+def run(args: list[str] | None = None) -> None:
     parser = build_parser()
-    namespace = parser.parse_args()
+    namespace = parser.parse_args(args)
     kwargs = vars(namespace)
 
     try:
         func = kwargs.pop("func")
     except KeyError:
         print("Missing or incomplete action, see -h/--help")
-        exit(1)
+        exit(2)
 
     func(**kwargs)
     exit(0)
