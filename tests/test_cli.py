@@ -98,11 +98,14 @@ def test_add_software(
         assert out == error + "\n"
 
 
-@pytest.mark.parametrize(["software", "configured", "exit_code", "error"], [
-    (" ", False, 1, "no software provided"),
-    ("foo", False, 1, "software not found"),
-    ("foo", True, 0, ""),
-])
+@pytest.mark.parametrize(
+    ["software", "configured", "exit_code", "error"],
+    [
+        (" ", False, 1, "no software provided"),
+        ("foo", False, 1, "software not found"),
+        ("foo", True, 0, ""),
+    ],
+)
 def test_remove_software(
     software: str,
     configured: bool,
