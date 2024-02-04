@@ -1,3 +1,3 @@
 {
-    "foo": "https://example.com/{version}/foo.zip"
+    "foo": "https://example.com/{version}/foo-{version}.zip"
 }
