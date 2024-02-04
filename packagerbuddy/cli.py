@@ -80,7 +80,7 @@ def download_software(software: str, version: str) -> None:
         exit(1)
 
     archive = downloadutils.find_archive(software, version)
-    if archive:
+    if archive is not None:
         print(archive)
         return
 
@@ -89,9 +89,22 @@ def download_software(software: str, version: str) -> None:
 
 
 def install_software(software: str, version: str) -> None:
+    if not software.strip():
+        print("no software provided")
+        exit(1)
+
+    config = configutils.load()
+    if not configutils.is_software_configured(config, software):
+        print("software not found")
+        exit(1)
+
+    if installutils.is_software_installed(software, version):
+        dir_install = installutils.build_install_path(software, version)
+        print(dir_install)
+        return
+
     archive = downloadutils.find_archive(software, version)
-    if not archive:
-        config = configutils.load()
+    if archive is None:
         archive = downloadutils.download(software, version, config)
 
     dir_temp = installutils.build_temporary_install_path(software, version)
@@ -100,10 +113,8 @@ def install_software(software: str, version: str) -> None:
     installutils.unarchive(archive, dir_temp)
 
     dir_install = installutils.build_install_path(software, version)
-    if not os.path.exists(dir_install):
-        os.makedirs(dir_install)
+    os.makedirs(dir_install, exist_ok=True)
 
-    config = configutils.load()
     installutils.cleanup(config, software, version)
 
     print(dir_install)
