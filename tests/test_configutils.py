@@ -10,7 +10,10 @@ from packagerbuddy import configutils
 
 def test_load(mock_settings_file_config: None) -> None:
     config = configutils.load()
-    assert config == {"foo": r"https://example.com/{version}/foo-{version}.zip"}
+    assert config == {
+        "foo": r"https://example.com/{version}/foo-{version}.zip",
+        "bar": r"https://example.com/{version}/bar-{version}.tar.gz",
+    }
 
 
 def test_dump(fix_file_config_tmp: str) -> None:
@@ -26,7 +29,7 @@ def test_dump(fix_file_config_tmp: str) -> None:
     ["software", "configured"],
     [
         ("foo", True),
-        ("bar", False),
+        ("xyz", False),
     ],
 )
 def test_is_software_configured(

@@ -51,7 +51,7 @@ def test_list_available_software(
 
     assert exc.value.code == 0
     out, _err = capsys.readouterr()
-    assert out == "foo" + "\n"
+    assert out == "\n".join(["bar", "foo"]) + "\n"
 
 
 @pytest.mark.parametrize(
@@ -59,9 +59,9 @@ def test_list_available_software(
     [
         (" ", "", 1, "no software provided"),
         ("foo", " ", 1, "no url provided"),
-        ("foo", "bar", 1, "software already configured"),
-        ("bar", "bar", 1, r"no {version} format string found in url"),
-        ("bar", r"https://example.com/{version}/bar.zip", 0, ""),
+        ("foo", "0.1.0", 1, "software already configured"),
+        ("xyz", "0.1.0", 1, r"no {version} format string found in url"),
+        ("xyz", r"https://example.com/{version}/xyz-{version}.zip", 0, ""),
     ],
 )
 def test_add_software(
@@ -92,7 +92,7 @@ def test_add_software(
     ["software", "exit_code", "error"],
     [
         (" ", 1, "no software provided"),
-        ("bar", 1, "software not found"),
+        ("xyz", 1, "software not found"),
         ("foo", 0, ""),
     ],
 )
@@ -123,7 +123,7 @@ def test_remove_software(
     ["software", "version", "exit_code", "error"],
     [
         (" ", "0.1.0", 1, "no software provided"),
-        ("bar", "0.1.0", 1, "software not found"),
+        ("xyz", "0.1.0", 1, "software not found"),
         ("foo", "0.1.0", 0, ""),
         ("foo", "0.3.0", 0, ""),
     ],
@@ -161,9 +161,10 @@ def test_download_software(
     ["software", "version", "exit_code", "error"],
     [
         (" ", "0.1.0", 1, "no software provided"),
-        ("bar", "0.1.0", 1, "software not found"),
+        ("xyz", "0.1.0", 1, "software not found"),
         ("foo", "0.1.0", 0, ""),
         ("foo", "0.2.0", 0, ""),
+        ("bar", "0.2.0", 0, ""),
     ],
 )
 def test_install_software(
