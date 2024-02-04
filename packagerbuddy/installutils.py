@@ -69,7 +69,7 @@ def cleanup(config: dict[str, str], software: str, version: str):
         os.rename(dir_temp, dir_install)
 
 
-def get_installed_software(software: str | None = None, version: str | None = None) -> list[str]:
+def find_installed_software(software: str | None = None, version: str | None = None) -> list[str]:
     pattern = f"{software or '*'}-{version or '*'}"
     glob_path = os.path.join(settings.DIR_INSTALL, pattern)
     result = glob.glob(glob_path)

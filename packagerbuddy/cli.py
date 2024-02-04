@@ -110,7 +110,7 @@ def install_software(software: str, version: str) -> None:
 
 
 def list_installed_software(software: str | None = None, version: str | None = None) -> None:
-    installed = installutils.get_installed_software(software=software, version=version)
+    installed = installutils.find_installed_software(software=software, version=version)
     print("\n".join(installed))
 
 
