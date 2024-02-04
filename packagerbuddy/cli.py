@@ -46,7 +46,6 @@ def add_software(software: str, url: str) -> None:
     config = configutils.load()
 
     if configutils.is_software_configured(config, software):
-        print("software already configured")
         exit(0)
 
     if r"{version}" not in url:
