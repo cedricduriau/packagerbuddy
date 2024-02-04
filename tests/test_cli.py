@@ -52,3 +52,41 @@ def test_list_available_software(capsys, monkeypatch: pytest.MonkeyPatch):
     assert exc.value.code == 0
     out, _err = capsys.readouterr()
     assert out == "\n".join(["a", "b"]) + "\n"
+
+
+@pytest.mark.parametrize(["software", "url", "exit_code", "configured"], [
+    ("", "", 1, False),
+    (" ", "", 1, False),
+    ("foo", " ", 1, False),
+    ("foo", "bar", 0, True),
+    ("foo", r"https://example.com/{version}/foo.zip", 0, False),
+])
+def test_add_software(
+    software: str,
+    url: str,
+    exit_code: int,
+    configured: bool,
+    capsys,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    mock_config: dict = {}
+    if configured:
+        mock_config[software] = url
+
+    def mock_configutils_load() -> dict:
+        return mock_config
+
+    def mock_configutils_dump(config: dict):
+        return
+
+    monkeypatch.setattr(configutils, "load", mock_configutils_load)
+    monkeypatch.setattr(configutils, "dump", mock_configutils_dump)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.run(["add", "-s", software, "-u", url])
+
+    assert exc.value.code == exit_code
+    out, _err = capsys.readouterr()
+
+    if exit_code == 0:
+        assert mock_config[software] == url
