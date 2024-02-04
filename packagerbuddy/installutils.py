@@ -22,6 +22,12 @@ def build_install_path(software: str, version: str) -> str:
     return path
 
 
+def is_software_installed(software: str, version: str) -> bool:
+    path = build_install_path(software, version)
+    exists = os.path.exists(path)
+    return exists
+
+
 def get_archive_name(software: str, version: str, config: dict[str, str]) -> str:
     template = config[software]
     url = template.format(version=version)
@@ -63,15 +69,14 @@ def cleanup(config: dict[str, str], software: str, version: str):
     archive_name = get_archive_name(software, version, config)
     contents = os.listdir(dir_temp)
     if len(contents) == 1 and contents[0] == archive_name:
-        shutil.copytree(os.path.join(dir_temp, archive_name), dir_install)
-        os.remove(dir_temp)
+        shutil.copytree(os.path.join(dir_temp, archive_name), dir_install, dirs_exist_ok=True)
+        shutil.rmtree(dir_temp)
     else:
         os.rename(dir_temp, dir_install)
 
 
 def find_installed_software(software: str | None = None, version: str | None = None) -> list[str]:
-    pattern = f"{software or '*'}-{version or '*'}"
-    glob_path = os.path.join(settings.DIR_INSTALL, pattern)
+    glob_path = build_install_path(software or "*", version or "*")
     result = glob.glob(glob_path)
     result.sort()
     return result
