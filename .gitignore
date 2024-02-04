@@ -1,6 +1,7 @@
 # files
 *.pyc
 .coverage
+.DS_Store
 
 # directories
 .vscode/
