@@ -63,7 +63,7 @@ def mock_settings_file_config(fix_file_config: str, monkeypatch: pytest.MonkeyPa
 
 
 @pytest.fixture
-def mock_settings_dir_downloaded(fix_dir_downloaded: str, monkeypatch: pytest.MonkeyPatch) -> None:
+def mock_settings_dir_download(fix_dir_downloaded: str, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "DIR_DOWNLOAD", fix_dir_downloaded)
 
 
