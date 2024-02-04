@@ -213,7 +213,7 @@ def run(args: list[str] | None = None) -> None:
     try:
         func = kwargs.pop("func")
     except KeyError:
-        print("Missing or incomplete action, see -h/--help")
+        print("packagerbuddy: error: missing action, see -h/--help")
         exit(2)
 
     func(**kwargs)
