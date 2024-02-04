@@ -55,13 +55,13 @@ def test_list_available_software(capsys, monkeypatch: pytest.MonkeyPatch):
 
 
 @pytest.mark.parametrize(
-    ["software", "url", "exit_code", "configured"],
+    ["software", "url", "configured", "exit_code", "error"],
     [
-        ("", "", 1, False),
-        (" ", "", 1, False),
-        ("foo", " ", 1, False),
-        ("foo", "bar", 0, True),
-        ("foo", r"https://example.com/{version}/foo.zip", 0, False),
+        (" ", "", False, 1, "no software provided"),
+        ("foo", " ", False, 1, "no url provided"),
+        ("foo", "bar", True, 0, ""),
+        ("foo", "bar", False, 1, r"no {version} format string found in url"),
+        ("foo", r"https://example.com/{version}/foo.zip", False, 0, ""),
     ],
 )
 def test_add_software(
@@ -69,6 +69,7 @@ def test_add_software(
     url: str,
     exit_code: int,
     configured: bool,
+    error: str,
     capsys,
     monkeypatch: pytest.MonkeyPatch,
 ):
@@ -89,7 +90,9 @@ def test_add_software(
         cli.run(["add", "-s", software, "-u", url])
 
     assert exc.value.code == exit_code
-    out, _err = capsys.readouterr()
+    out, err = capsys.readouterr()
 
     if exit_code == 0:
         assert mock_config[software] == url
+    else:
+        assert out == error + "\n"
