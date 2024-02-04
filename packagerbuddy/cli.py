@@ -5,7 +5,7 @@ import argparse
 import os
 
 # package
-from packagerbuddy import archiveutils, configutils, downloadutils, settings
+from packagerbuddy import configutils, downloadutils, installutils, settings
 
 
 # ==============================================================================
@@ -81,19 +81,24 @@ def install_software(software: str, version: str) -> None:
         config = configutils.load()
         archive = downloadutils.download(software, version, config)
 
-    dir_temp = archiveutils.build_temporary_install_path(software, version)
+    dir_temp = installutils.build_temporary_install_path(software, version)
     os.makedirs(dir_temp, exist_ok=True)
 
-    archiveutils.unarchive(archive, dir_temp)
+    installutils.unarchive(archive, dir_temp)
 
-    dir_install = archiveutils.build_install_path(software, version)
+    dir_install = installutils.build_install_path(software, version)
     if not os.path.exists(dir_install):
         os.makedirs(dir_install)
 
     config = configutils.load()
-    archiveutils.cleanup(config, software, version)
+    installutils.cleanup(config, software, version)
 
     print(dir_install)
+
+
+def list_installed_software(software: str | None = None, version: str | None = None) -> None:
+    installed = installutils.get_installed_software(software=software, version=version)
+    print("\n".join(installed))
 
 
 # ==============================================================================
@@ -109,13 +114,6 @@ def build_parser():
     help = "set up package content"
     parser_setup = subparsers.add_parser("setup", help=help)
     parser_setup.set_defaults(func=setup)
-
-    # ==========================================================================
-    # avail
-    # ==========================================================================
-    help = "list available software to download"
-    parser_avail = subparsers.add_parser("avail", help=help)
-    parser_avail.set_defaults(func=list_available_software)
 
     # ==========================================================================
     # add
@@ -143,6 +141,13 @@ def build_parser():
     # required arguments
     req_args = parser_remove.add_argument_group("required arguments")
     req_args.add_argument("-s", "--software", help="name of the software")
+
+    # ==========================================================================
+    # avail
+    # ==========================================================================
+    help = "list available software to download"
+    parser_avail = subparsers.add_parser("avail", help=help)
+    parser_avail.set_defaults(func=list_available_software)
 
     # ==========================================================================
     # download
@@ -177,6 +182,22 @@ def build_parser():
     req_args.add_argument("-v", "--version", help=help)
 
     # ==========================================================================
+    # list
+    # ==========================================================================
+    help = "list installed software"
+    parser_list = subparsers.add_parser("list", help=help)
+    parser_list.set_defaults(func=list_installed_software)
+
+    # optional arguments
+    opt_args = parser_list.add_argument_group("optional arguments")
+
+    help = "name of the software"
+    opt_args.add_argument("-s", "--software", help=help, required=False)
+
+    help = "version of the software"
+    opt_args.add_argument("-v", "--version", help=help, required=False)
+
+    # ==========================================================================
     # parser settings
     # ==========================================================================
     parser.description = "JSON config based software packager."
@@ -196,3 +217,4 @@ def run() -> None:
         exit(1)
 
     func(**kwargs)
+    exit(0)

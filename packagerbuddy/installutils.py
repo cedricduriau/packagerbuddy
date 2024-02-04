@@ -1,4 +1,5 @@
 # stdlib
+import glob
 import os
 import shutil
 import tarfile
@@ -66,3 +67,11 @@ def cleanup(config: dict[str, str], software: str, version: str):
         os.remove(dir_temp)
     else:
         os.rename(dir_temp, dir_install)
+
+
+def get_installed_software(software: str | None = None, version: str | None = None) -> list[str]:
+    pattern = f"{software or '*'}-{version or '*'}"
+    glob_path = os.path.join(settings.DIR_INSTALL, pattern)
+    result = glob.glob(glob_path)
+    result.sort()
+    return result
