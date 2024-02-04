@@ -5,7 +5,7 @@ import os
 import pytest
 
 # package
-from packagerbuddy import cli
+from packagerbuddy import cli, configutils
 
 
 def test_run():
@@ -38,3 +38,17 @@ def test_setup(exists: bool, monkeypatch: pytest.MonkeyPatch):
         cli.run(["setup"])
 
     assert exc.value.code == 0
+
+
+def test_list_available_software(capsys, monkeypatch: pytest.MonkeyPatch):
+    def mock_configutils_load() -> dict:
+        return {"a": "foo", "b": "bar"}
+
+    monkeypatch.setattr(configutils, "load", mock_configutils_load)
+
+    with pytest.raises(SystemExit) as exc:
+        cli.run(["avail"])
+
+    assert exc.value.code == 0
+    out, _err = capsys.readouterr()
+    assert out == "\n".join(["a", "b"]) + "\n"
