@@ -46,7 +46,8 @@ def add_software(software: str, url: str) -> None:
     config = configutils.load()
 
     if configutils.is_software_configured(config, software):
-        exit(0)
+        print("software already configured")
+        exit(1)
 
     if r"{version}" not in url:
         print(r"no {version} format string found in url")
@@ -56,10 +57,14 @@ def add_software(software: str, url: str) -> None:
 
 
 def remove_software(software: str) -> None:
+    if not software.strip():
+        print("no software provided")
+        exit(1)
+
     config = configutils.load()
     if not configutils.is_software_configured(config, software):
         print("software not found")
-        return
+        exit(1)
 
     configutils.remove_software(config, software)
 
