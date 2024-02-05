@@ -120,6 +120,17 @@ def install_software(software: str, version: str) -> None:
     print(dir_install)
 
 
+def uninstall_software(software: str, version: str | None = None) -> None:
+    if not software.strip():
+        print("no software provided")
+        exit(1)
+
+    installed_dirs = installutils.find_installed_software(software=software, version=version)
+    for installed in installed_dirs:
+        installutils.uninstall_software(installed)
+        print(installed)
+
+
 def list_installed_software(software: str | None = None, version: str | None = None) -> None:
     installed = installutils.find_installed_software(software=software, version=version)
     print("\n".join(installed))
@@ -204,6 +215,25 @@ def build_parser():
 
     help = "version of the software"
     req_args.add_argument("-v", "--version", help=help)
+
+    # ==========================================================================
+    # uninstall
+    # ==========================================================================
+    help = "uninstall software"
+    parser_uninstall = subparsers.add_parser("uninstall", help=help)
+    parser_uninstall.set_defaults(func=uninstall_software)
+
+    # required arguments
+    req_args = parser_uninstall.add_argument_group("required arguments")
+
+    help = "name of the software"
+    req_args.add_argument("-s", "--software", help=help)
+
+    # optional arguments
+    opt_args = parser_uninstall.add_argument_group("optional arguments")
+
+    help = "version of the software"
+    opt_args.add_argument("-v", "--version", help=help, required=False)
 
     # ==========================================================================
     # list

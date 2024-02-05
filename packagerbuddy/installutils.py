@@ -63,7 +63,7 @@ def unarchive(archive: str, target: str) -> None:
     func(archive, target)
 
 
-def cleanup(config: dict[str, str], software: str, version: str):
+def cleanup(config: dict[str, str], software: str, version: str) -> None:
     dir_temp = build_temporary_install_path(software, version)
     dir_install = build_install_path(software, version)
     archive_name = get_archive_name(software, version, config)
@@ -80,3 +80,7 @@ def find_installed_software(software: str | None = None, version: str | None = N
     result = glob.glob(glob_path)
     result.sort()
     return result
+
+
+def uninstall_software(dir_install: str) -> None:
+    shutil.rmtree(dir_install)
