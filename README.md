@@ -64,7 +64,7 @@ packagerbuddy avail
 The `install` command requires two arguments. The `software` argument which needs to match an alias in the software config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop.
 
 ```sh
-packagerbuddy install --software codium --version 1.44.0
+packagerbuddy install --software codium --version 1.85.2.2401
 ```
 
 Installing consists of five steps:
@@ -91,7 +91,7 @@ The `version` argument is optional. If it is passed, only given version will be 
 packagerbuddy uninstall --software codium
 
 # uninstall specific version
-packagerbuddy uninstall --software codium --version 1.44.0
+packagerbuddy uninstall --software codium --version 1.85.2.2401
 ```
 
 ## Configure
