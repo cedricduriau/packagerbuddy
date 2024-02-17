@@ -2,7 +2,8 @@
 [![platform](https://img.shields.io/badge/platform-linux--x64-lightgrey.svg)](https://img.shields.io/badge/platform-linux--x64-lightgrey.svg)
 [![platform](https://img.shields.io/badge/platform-darwin--arm64-lightgrey.svg)](https://img.shields.io/badge/platform-darwin--arm64-lightgrey.svg)
 [![license: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://img.shields.io/badge/Python-3.8+-blue.svg)
+[![python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://img.shields.io/badge/Python-3.8+-blue.svg)
+[![coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](https://img.shields.io/badge/coverage-90%25-brightgreen)
 
 ## Overview
 
