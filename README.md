@@ -37,12 +37,11 @@ The setup command will create all directories required to function. By default t
 packagerbuddy setup
 ```
 
-
 ### Add software
 The add command requires two arguments. The `software` argument used as alias to interact with, and the `url` argument which needs to be an url containing a version placeholder.
 
 ```sh
-packagerbuddy add --software codium --url https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-linux-x64-{version}.tar.gz
+packagerbuddy add --software codium --url https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-darwin-arm64-{version}.zip
 ```
 
 ### Remove software
@@ -112,6 +111,5 @@ packagerbuddy uninstall --software codium --version 1.85.2.2401
 If you want to try out the example shipping with the repository, run following commands from the root of this repo:
 
 ```sh
-cp -R ./linux-x64/examples/* ~/.packagerbuddy/
 cp -R ./darwin-arm64/examples/* ~/.packagerbuddy/
 ```
