@@ -5,7 +5,7 @@ import argparse
 import os
 
 # package
-from packagerbuddy import configutils, downloadutils, installutils, settings
+from packagerbuddy import configutils, downloadutils, installutils, scriptutils, settings
 
 
 # ==============================================================================
@@ -116,6 +116,10 @@ def install_software(software: str, version: str) -> None:
     os.makedirs(dir_install, exist_ok=True)
 
     installutils.cleanup(config, software, version)
+
+    scripts = scriptutils.find_scripts(software, version)
+    for script in scripts:
+        scriptutils.run_script(script, software, version, wd=dir_install)
 
     print(dir_install)
 
