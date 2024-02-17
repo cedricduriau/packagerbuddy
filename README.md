@@ -32,7 +32,7 @@ pip install git+git://github.com/cedricduriau/packagerbuddy.git@{RELEASE}
 
 ### Setup
 
-The setup command will create all directories required to function. By default these are installed in the user home directory. To change the default location, see see [Configure](##Configure).
+The setup command will create all directories required to function. By default these are installed in the user home directory. To change the default location, see see [Configure](#Configure).
 
 ```sh
 packagerbuddy setup
