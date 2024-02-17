@@ -44,6 +44,12 @@ def fix_dir_installed(fix_test_data: str):
 
 
 @pytest.fixture
+def fix_dir_scripts(fix_test_data: str):
+    path = os.path.join(fix_test_data, "scripts")
+    return path
+
+
+@pytest.fixture
 def fix_file_config_tmp(monkeypatch: pytest.MonkeyPatch) -> None:
     _, tmp_config = tempfile.mkstemp(suffix=".json", prefix="software")
     monkeypatch.setattr(settings, "FILE_CONFIG", tmp_config)
@@ -70,3 +76,8 @@ def mock_settings_dir_download(fix_dir_downloaded: str, monkeypatch: pytest.Monk
 @pytest.fixture
 def mock_settings_dir_install(fix_dir_installed: str, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(settings, "DIR_INSTALL", fix_dir_installed)
+
+
+@pytest.fixture
+def mock_settings_dir_scripts(fix_dir_scripts: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "DIR_SCRIPTS", fix_dir_scripts)
