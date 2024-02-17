@@ -1,6 +1,7 @@
 # files
 *.pyc
 .coverage
+.DS_Store
 
 # directories
 .vscode/
@@ -8,3 +9,5 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+.env/
+.ruff_cache/

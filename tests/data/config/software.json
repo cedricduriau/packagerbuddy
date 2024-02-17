@@ -1,0 +1,4 @@
+{
+    "foo": "https://example.com/{version}/foo-{version}.zip",
+    "bar": "https://example.com/{version}/bar-{version}.tar.gz"
+}

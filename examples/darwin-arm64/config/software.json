@@ -1,0 +1,3 @@
+{
+    "codium": "https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-darwin-arm64-{version}.zip"
+}

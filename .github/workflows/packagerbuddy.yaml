@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [2.7, 3.6]
+        python-version: [3.8, 3.11]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
@@ -15,10 +15,7 @@ jobs:
 
     - name: Install
       run: |
-        pip install -e .[dev]
+        make install-dev
     - name: Lint
       run: |
-        ./runcheck
-    - name: Test
-      run: |
-        ./runtests
+        make check

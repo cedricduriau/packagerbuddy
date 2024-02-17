@@ -1,48 +1,83 @@
 # stdlib
+import json
 import os
+import tempfile
 
-try:
-    from urllib.request import build_opener, install_opener
-except ImportError:
-    from urllib2 import build_opener, install_opener
-
-# tool modules
-from tests.mock_urllib import MockHTTPHandler
-
-# third party modules
+# third party
 import pytest
 
+# package
+from packagerbuddy import settings
 
+
+# ==============================================================================
+# fixtures
+# ==============================================================================
 @pytest.fixture
-def patch_PB_CONFIG(monkeypatch):
-    """Monkey patches the PB_CONFIG environment variable."""
-    directory = os.path.dirname(__file__)
-    os.environ["PB_CONFIG"] = os.path.join(directory, "test_config", "software.json")
-
-
-@pytest.fixture
-def patch_PB_DOWNLOAD(monkeypatch):
-    """Monkey patches the PB_DOWNLOAD environment variable."""
-    directory = os.path.dirname(__file__)
-    os.environ["PB_DOWNLOAD"] = os.path.join(directory, "test_source")
+def fix_test_data() -> str:
+    path = os.path.join(os.path.dirname(__file__), "data")
+    return path
 
 
 @pytest.fixture
-def patch_PB_INSTALL(monkeypatch):
-    """Monkey patches the PB_INSTALL environment variable."""
-    directory = os.path.dirname(__file__)
-    os.environ["PB_INSTALL"] = os.path.join(directory, "test_install")
+def fix_dir_config(fix_test_data: str) -> str:
+    path = os.path.join(fix_test_data, "config")
+    return path
 
 
 @pytest.fixture
-def patch_PB_SCRIPTS(monkeypatch):
-    """Monkey patches the PB_SCRIPTS environment variable."""
-    directory = os.path.dirname(__file__)
-    os.environ["PB_SCRIPTS"] = os.path.join(directory, "test_scripts")
+def fix_file_config(fix_dir_config: str) -> str:
+    path = os.path.join(fix_dir_config, "software.json")
+    return path
 
 
 @pytest.fixture
-def patch_url_handler(monkeypatch):
-    """Monkey patches the urllib http handler to return a custom class."""
-    my_opener = build_opener(MockHTTPHandler)
-    install_opener(my_opener)
+def fix_dir_downloaded(fix_test_data: str):
+    path = os.path.join(fix_test_data, "downloaded")
+    return path
+
+
+@pytest.fixture
+def fix_dir_installed(fix_test_data: str):
+    path = os.path.join(fix_test_data, "installed")
+    return path
+
+
+@pytest.fixture
+def fix_dir_scripts(fix_test_data: str):
+    path = os.path.join(fix_test_data, "scripts")
+    return path
+
+
+@pytest.fixture
+def fix_file_config_tmp(monkeypatch: pytest.MonkeyPatch) -> None:
+    _, tmp_config = tempfile.mkstemp(suffix=".json", prefix="software")
+    monkeypatch.setattr(settings, "FILE_CONFIG", tmp_config)
+
+    with open(tmp_config, "w") as fp:
+        json.dump({}, fp)
+
+    return tmp_config
+
+
+# ==============================================================================
+# patches
+# ==============================================================================
+@pytest.fixture
+def mock_settings_file_config(fix_file_config: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "FILE_CONFIG", fix_file_config)
+
+
+@pytest.fixture
+def mock_settings_dir_download(fix_dir_downloaded: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "DIR_DOWNLOAD", fix_dir_downloaded)
+
+
+@pytest.fixture
+def mock_settings_dir_install(fix_dir_installed: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "DIR_INSTALL", fix_dir_installed)
+
+
+@pytest.fixture
+def mock_settings_dir_scripts(fix_dir_scripts: str, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(settings, "DIR_SCRIPTS", fix_dir_scripts)
