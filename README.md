@@ -21,10 +21,10 @@ If you wish to install the current master, use the following command:
 
 ```sh
 # latest master
-$ pip install git+git://github.com/cedricduriau/packagerbuddy.git
+pip install git+git://github.com/cedricduriau/packagerbuddy.git
 
 # specific version
-$ pip install git+git://github.com/cedricduriau/packagerbuddy.git@{RELEASE}
+pip install git+git://github.com/cedricduriau/packagerbuddy.git@{RELEASE}
 ```
 
 ## Usage
@@ -34,7 +34,7 @@ $ pip install git+git://github.com/cedricduriau/packagerbuddy.git@{RELEASE}
 The setup command will create all directories required to function. By default these are installed in the user home directory. To change the default location, see see [Configure](##Configure).
 
 ```sh
-$ packagerbuddy setup
+packagerbuddy setup
 ```
 
 
@@ -42,7 +42,7 @@ $ packagerbuddy setup
 The add command requires two arguments. The `software` argument used as alias to interact with, and the `url` argument which needs to be an url containing a version placeholder.
 
 ```sh
-$ packagerbuddy add --software codium --url https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-linux-x64-{version}.tar.gz
+packagerbuddy add --software codium --url https://github.com/VSCodium/vscodium/releases/download/{version}/VSCodium-linux-x64-{version}.tar.gz
 ```
 
 ### Remove software
@@ -50,21 +50,21 @@ $ packagerbuddy add --software codium --url https://github.com/VSCodium/vscodium
 The remove command requires a single argument, the `software` argument, which needs to match an already added software. To list the available software packages, see `avail` command below.
 
 ```sh
-$ packagerbuddy remove --software codium
+packagerbuddy remove --software codium
 ```
 
 ### List available software to install
 The `avail` command prints all software names that are present in the config, supported by PackgerBuddy.
 
 ```sh
-$ packagerbuddy avail
+packagerbuddy avail
 ```
 
 ### Install software
 The `install` command requires two arguments. The `software` argument which needs to match an alias in the software config and the `version` argument which needs to form an existing download url. If the requested software version has already been installed, the install will stop.
 
 ```sh
-$ packagerbuddy install --software codium --version 1.44.0
+packagerbuddy install --software codium --version 1.44.0
 ```
 
 Installing consists of five steps:
@@ -78,7 +78,7 @@ Installing consists of five steps:
 The `list` command prints all installed software. PackagerBuddy knows the difference between ordinary directories and software it installed thanks to a package file which is written out at install time.
 
 ```sh
-$ packagerbuddy list
+packagerbuddy list
 ```
 
 ### Uninstalling
@@ -88,10 +88,10 @@ The `version` argument is optional. If it is passed, only given version will be 
 
 ```sh
 # uninstall all versions
-$ packagerbuddy uninstall --software codium
+packagerbuddy uninstall --software codium
 
 # uninstall specific version
-$ packagerbuddy uninstall --software codium --version 1.44.0
+packagerbuddy uninstall --software codium --version 1.44.0
 ```
 
 ## Configure
@@ -112,6 +112,6 @@ $ packagerbuddy uninstall --software codium --version 1.44.0
 If you want to try out the example shipping with the repository, run following commands from the root of this repo:
 
 ```sh
-$ cp -R ./linux-x64/examples/* ~/.packagerbuddy/`
-$ cp -R ./darwin-arm64/examples/* ~/.packagerbuddy/`
+cp -R ./linux-x64/examples/* ~/.packagerbuddy/
+cp -R ./darwin-arm64/examples/* ~/.packagerbuddy/
 ```
