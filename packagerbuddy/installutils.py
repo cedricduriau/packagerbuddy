@@ -57,7 +57,10 @@ def unarchive(archive: str, target: str) -> None:
     _, ext = pathutils.split_ext(archive)
     map_extension_func: dict[str, Callable] = {
         ".zip": unzip,
+        ".tar": untar,
+        ".tgz": untar,
         ".tar.gz": untar,
+        ".tar.bz2": untar,
     }
     func = map_extension_func[ext]
     func(archive, target)

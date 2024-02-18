@@ -11,7 +11,9 @@ from packagerbuddy import pathutils
         ("/root/dir/file.txt", "/root/dir/file.txt", ""),
         ("/root/dir/file.zip", "/root/dir/file", ".zip"),
         ("/root/dir/file.tar", "/root/dir/file", ".tar"),
+        ("/root/dir/file.tgz", "/root/dir/file", ".tgz"),
         ("/root/dir/file.tar.gz", "/root/dir/file", ".tar.gz"),
+        ("/root/dir/file.tar.bz2", "/root/dir/file", ".tar.bz2"),
         ("/root/dir/file.dot1.dot2.tar.gz", "/root/dir/file.dot1.dot2", ".tar.gz"),
     ],
 )
